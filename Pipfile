@@ -4,8 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+setuptools = "*"
+tensor2tensor = "==1.6.6"
+tensorflow = "==1.8.0"
+numpy = "==1.19.5"
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "3.6"

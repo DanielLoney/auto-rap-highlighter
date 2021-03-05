@@ -12,3 +12,7 @@ pip install --user pipenv
 ```
 pipenv install
 ```
+5. Install g2p-seq2seq
+```
+git clone https://github.com/cmusphinx/g2p-seq2seq.git
+```
