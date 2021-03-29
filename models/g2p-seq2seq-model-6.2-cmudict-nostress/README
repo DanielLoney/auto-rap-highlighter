@@ -1,0 +1,39 @@
+This model is trained for grapheme-to-phoneme translation using the
+[g2p-seq2seq](https://github.com/cmusphinx/g2p-seq2seq) toolkit. You can
+use this pre-trained model for inference of the English words:
+
+```
+$ g2p-seq2seq --model_dir models/model_size-256_layers-3_filter-512_best --interactive
+...
+> hello
+...
+Pronunciations: ['HH EH L OW']
+> 
+```
+
+The model was trained on [CMUdict
+latest](https://github.com/cmusphinx/cmudict) dataset. The pronunciations
+in this dataset contain stress. You can add "--cleanup" flag during
+training in order to remove the stress from the original dataset. Also,
+if you don't want to split the cmudict.dict dataset into train,
+development and test set by yourself, you can just skip the "--dev" and
+"--test" flags during training. This model was trained with the following
+parameters:
+
+```
+$ g2p-seq2seq --model_dir models/model_size-256_layers-3_filter-512_best --train cmudict/cmudict.dict --size 256 --num_layers 3 --filter_size 512 --cleanup
+```
+
+The toolkit creates all three datasets (train, development and test) in
+your data folder. After the training is finished, you can use created
+cmudict.dict.part.test.cleanup file to evaluate the model. The
+g2p-seq2seq word error rate on this test file is 30.2%:
+
+```
+$ g2p-seq2seq --model_dir models/model_size-256_layers-3_filter-512_best --evaluate cmudict/cmudict.dict.part.test.cleanup
+...
+Words: 13508
+Errors: 4078
+WER: 0.302
+Accuracy: 0.698
+```
