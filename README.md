@@ -40,6 +40,10 @@ For an English word list with one word per line run:
 ```
 $ g2p-seq2seq --decode your_wordlist --model_dir model_folder_path [--output decode_output_file_path]
 ```
+Word error rate can be found by running:
+```
+$ g2p-seq2seq --evaluate your_test_dictionary --model_dir model_folder_path
+```
 ## Sources
 - https://github.com/cmusphinx/g2p-seq2seq
   - README instructions inspired from this too 
