@@ -18,3 +18,8 @@ pipenv install
 ```
 git clone https://github.com/cmusphinx/g2p-seq2seq.git
 ```
+## Running the Rhyming Dictionary
+
+```
+pipenv shell
+```
