@@ -7,19 +7,41 @@
 3. Install Pip
 4. Install Pipenv
 ```
-pip install --user pipenv
+$ pip install --user pipenv
 ```
-4. Install dependencies via Pipenv
+5. Install dependencies via Pipenv
 In the rhymerap repo directory:
 ```
-pipenv install
+$ pipenv install
 ```
-5. Install g2p-seq2seq in the rhymerap repo directory
+6. Install g2p-seq2seq
 ```
-git clone https://github.com/cmusphinx/g2p-seq2seq.git
+$ git clone https://github.com/cmusphinx/g2p-seq2seq.git
+$ sudo python setup.py install (from the g2p-seq2seq directory)
 ```
 ## Running the Rhyming Dictionary
+First run the pythonenv
+```
+$ pipenv shell
 
 ```
-pipenv shell
+The cmusphinx/g2p-seq2seq pretrained model can be found in models/model_size-256_layers-3_filter-512_best.
+To try out individual words, run the following:
 ```
+$ g2p-seq2seq --interactive --model_dir model_folder_path
+...
+> hello
+...
+Pronunciations: [HH EH L OW]
+...
+>
+```
+For an English word list with one word per line run:
+```
+$ g2p-seq2seq --decode your_wordlist --model_dir model_folder_path [--output decode_output_file_path]
+```
+## Sources
+- https://github.com/cmusphinx/g2p-seq2seq
+  - README instructions inspired from this too 
+- cmusphinx/g2p-seq2seq pretrained dictionary from sourceforge
+- 
