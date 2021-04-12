@@ -8,6 +8,8 @@ parser.add_argument("-i", "--input", nargs='?', default='.',
         help='input directory path with .txt files of lyrics/literature')
 parser.add_argument("-o", "--output", nargs='?', default='.',
         help='output directory path with for <name>_comatrix.csv files')
+parser.add_argument("-m", "--model_dir", nargs=1,
+        help='g2p model directory path')
 parser.add_argument("-s", "--separator", nargs='?', default='',
         help='output directory path with for <name>_comatrix.csv files')
 args = parser.parse_args()

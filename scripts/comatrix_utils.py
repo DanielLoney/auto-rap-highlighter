@@ -4,8 +4,8 @@ def to_word_list(src, dest):
   if not os.path.exists(src):
     print(src + " does not exist")
     return
-  for filename in glob.glob(src + "/*.txt"):
-    file = open(filename, 'rt')
+  for filepath in glob.glob(src + "/*.txt"):
+    file = open(filepath, 'rt')
     text = file.read()
     file.close()
     text = re.sub("[\[].*?[\]]|[^a-zA-Z-' \n]", "", text)
@@ -17,6 +17,4 @@ def to_word_list(src, dest):
         file.write(word + "\n")
       file.write(words[-1])
 
-def to_phonemes():
-    pass
 
