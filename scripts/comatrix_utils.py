@@ -60,3 +60,85 @@ def phones_to_list(src):
     for idx, line in enumerate(lines):
       phones.append(line.split("\t", 1)[0])
   return phone
+
+def phonemes_list_to_csv(phonemes_src, phones_src, dest_dir, separator=''):
+  if not os.path.exists(phonemes_src):
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),\
+            phonemes_src)
+  if not os.path.exists(src):
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),\
+            phones_src)
+  if not os.path.exists(src):
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),\
+            dest_dir)
+
+  phonemes = phonemes_to_list(phonemes_src, separator)
+  phones = phones_to_list(phones_src)
+
+  comatrix = pd.DataFrame(index=phones, columns=phones).fillna(0)
+
+  right_pointer = 0
+  phones_so_far = 0
+  ocurrences_in_range = {}
+
+  for phoneme in phonemes:
+    if phones_so_far < phoneme_radius and right_pointer < len(phonemes):
+      if phoneme != separator:
+        if phoneme not in ocurrences_in_range:
+          ocurrences_in_range[phoneme] = 0
+        ocurrences_in_range[phoneme] += 1
+        phones_so_far += 1
+      right_pointer += 1
+    else:
+      break
+
+  def remove_ocurrence(idx):
+    phoneme = phonemes[idx]
+    if phoneme != separator:
+      ocurrences_in_range[phoneme] -= 1
+      if ocurrences_in_range[phoneme] == 0:
+        del ocurrences_in_range[phoneme]
+      #print("Subtracting: " + str(idx) + " " + phoneme)
+
+  def add_ocurrence(idx):
+    phoneme = phonemes[idx]
+    if phoneme != separator:
+      if phoneme not in ocurrences_in_range:
+        ocurrences_in_range[phoneme] = 0
+      ocurrences_in_range[phoneme] += 1
+      #print("Adding: " + str(idx) + " " + phoneme)
+
+  left_pointer = 0
+  phones_seen = 0
+  for idx, phoneme in enumerate(phonemes):
+    if phoneme == separator:
+      continue
+    else:
+      phones_seen += 1
+
+    # add all co-ocurrent phonemes
+    for key in ocurrences_in_range:
+      ocurrences = ocurrences_in_range[key]
+      # if key is the phoneme, subtract one for itself
+      if key == phoneme:
+        ocurrences -= 1
+      # update co-ocurrence matrix with value
+      comatrix.at[phoneme, key] += ocurrences
+
+    if phones_seen >= phoneme_radius:
+      remove_ocurrence(left_pointer)
+      # Move left pointer to next non-separator phone
+      left_pointer += 1
+      while (phonemes[left_pointer] == separator):
+        left_pointer += 1
+
+    if right_pointer < len(phonemes) - 1:
+      # Move right pointer to next non-separator phone
+      right_pointer += 1
+      while (phonemes[right_pointer] == separator):
+        right_pointer += 1
+      add_ocurrence(right_pointer)
+
+  output_path = dest_dir + '/' + ''.join(os.path.basename(phonemes_src) \
+    .split("_")[:-2]) + "_comatrix.csv"
+  comatrix.to_csv(output_path)
