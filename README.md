@@ -59,6 +59,7 @@ For example:
 python3 scripts/create_comatrix.py temp/text cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress temp/comatrices -n temp/phoneme_list -w temp/word_list
 ```
 ### Instructions for scripts/create_comatrix.py
+```
 usage: create_comatrix.py [-h] [-n PHONEME_LIST] [-w WORD_LIST]
                           [-r WORD_RADIUS] [-s SEPARATOR]
                           input_dir_path phones_path model_dir_path
@@ -87,7 +88,7 @@ optional arguments:
                         radius * 6
   -s SEPARATOR, --separator SEPARATOR
                         separator string for word_list
-
+```
 ## Sources
 - https://github.com/cmusphinx/g2p-seq2seq
   - README instructions inspired from this too 
