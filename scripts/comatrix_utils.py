@@ -2,7 +2,7 @@ import re, os, glob, errno
 import numpy as np
 import pandas as pd
 
-def to_word_list(src, dest):
+def texts_to_words(src, dest):
   if not os.path.exists(src):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
   for filepath in glob.glob(src + "/*.txt"):
@@ -18,7 +18,7 @@ def to_word_list(src, dest):
         file.write(word + "\n")
       file.write(words[-1])
 
-def run_g2p(src_dir, dest_dir, model_dir):
+def words_to_phonemes(src_dir, dest_dir, model_dir):
   if not os.path.exists(src_dir):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src_dir)
   if not os.path.exists(dest_dir):
@@ -34,7 +34,7 @@ def run_g2p(src_dir, dest_dir, model_dir):
       " --model_dir " + model_dir + " --output " + output
     os.system(cmd)
 
-def phonemes_to_list(src, separator=""):
+def __phonemes_to_list(src, separator=""):
   if not os.path.exists(src):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
   phoneme_lists = []
@@ -51,7 +51,7 @@ def phonemes_to_list(src, separator=""):
     phonemes = phonemes[:-1]
   return phonemes
 
-def phones_to_list(src):
+def __phones_to_list(src):
   if not os.path.exists(src):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
   with open(src, "r") as phones:
@@ -59,21 +59,23 @@ def phones_to_list(src):
     phones = []
     for idx, line in enumerate(lines):
       phones.append(line.split("\t", 1)[0])
-  return phone
+  return phones
 
-def phonemes_list_to_csv(phonemes_src, phones_src, dest_dir, separator=''):
+def phonemes_to_csv(phonemes_src, phones_src, dest_dir, word_radius,\
+        separator=''):
   if not os.path.exists(phonemes_src):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),\
             phonemes_src)
-  if not os.path.exists(src):
+  if not os.path.exists(phones_src):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),\
             phones_src)
-  if not os.path.exists(src):
+  if not os.path.exists(dest_dir):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),\
             dest_dir)
 
-  phonemes = phonemes_to_list(phonemes_src, separator)
-  phones = phones_to_list(phones_src)
+  phoneme_radius = word_radius * 6
+  phonemes = __phonemes_to_list(phonemes_src, separator)
+  phones = __phones_to_list(phones_src)
 
   comatrix = pd.DataFrame(index=phones, columns=phones).fillna(0)
 
@@ -142,3 +144,9 @@ def phonemes_list_to_csv(phonemes_src, phones_src, dest_dir, separator=''):
   output_path = dest_dir + '/' + ''.join(os.path.basename(phonemes_src) \
     .split("_")[:-2]) + "_comatrix.csv"
   comatrix.to_csv(output_path)
+
+def multiple_phonemes_to_csv(phonemes_src_dir, phones_src,\
+        dest_dir, word_radius, separator=''):
+  for filepath in glob.glob(phonemes_src_dir + "/*.txt"):
+    phonemes_to_csv(filepath, phones_src, dest_dir, word_radius, separator)
+
