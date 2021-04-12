@@ -44,6 +44,13 @@ Word error rate can be found by running:
 ```
 $ g2p-seq2seq --evaluate your_test_dictionary --model_dir model_folder_path
 ```
+For the pretrained model:
+```
+Words: 13508
+Errors: 4078
+WER: 0.302
+Accuracy: 0.698
+```
 ## Sources
 - https://github.com/cmusphinx/g2p-seq2seq
   - README instructions inspired from this too 
