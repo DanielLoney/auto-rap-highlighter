@@ -53,10 +53,11 @@ Accuracy: 0.698
 ```
 
 ## Creating Phoneme Co-occurrence Matrices from text
-Run the scripts/create_comatrix.py file.
+Run the scripts/create_comatrix.py file from the python env.
 For example:
 ```
-python3 scripts/create_comatrix.py temp/text cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress temp/comatrices -n temp/phoneme_list -w temp/word_list
+$ pipenv shell
+$ python3 scripts/create_comatrix.py temp/text cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress temp/comatrices -n temp/phoneme_list -w temp/word_list
 ```
 ### Instructions for scripts/create_comatrix.py
 ```
