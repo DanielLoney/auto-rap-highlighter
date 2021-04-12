@@ -17,4 +17,5 @@ def to_word_list(src, dest):
         file.write(word + "\n")
       file.write(words[-1])
 
-
+def run_g2p():
+    pass #TODO
