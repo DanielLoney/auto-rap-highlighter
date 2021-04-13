@@ -78,6 +78,8 @@ def phonemes_to_csv(phonemes_src, phones_src, dest_dir, word_radius,\
   phones = __phones_to_list(phones_src)
 
   comatrix = pd.DataFrame(index=phones, columns=phones).fillna(0)
+  comatrix['count'] = 0
+  comatrix['word_radius'] = word_radius
 
   right_pointer = 0
   phones_so_far = 0
@@ -117,6 +119,7 @@ def phonemes_to_csv(phonemes_src, phones_src, dest_dir, word_radius,\
       continue
     else:
       phones_seen += 1
+      comatrix.at[phoneme, 'count'] += 1
 
     # add all co-ocurrent phonemes
     for key in ocurrences_in_range:
@@ -142,8 +145,14 @@ def phonemes_to_csv(phonemes_src, phones_src, dest_dir, word_radius,\
       add_ocurrence(right_pointer)
 
   output_path = dest_dir + '/' + ''.join(os.path.basename(phonemes_src) \
-    .split("_")[:-2]) + "_comatrix.csv"
-  comatrix.to_csv(output_path)
+    .split("_")[:-2])
+
+  comatrix.to_csv(output_path + "_comatrix.csv")
+
+  probmatrix = comatrix
+  probmatrix[phones] = probmatrix[phones].div(comatrix['count'] *\
+          phoneme_radius, axis=0)
+  probmatrix.to_csv(output_path + "_prob_comatrix.csv")
 
 def multiple_phonemes_to_csv(phonemes_src_dir, phones_src,\
         dest_dir, word_radius, separator=''):
