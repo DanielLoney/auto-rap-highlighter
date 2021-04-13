@@ -151,7 +151,7 @@ def phonemes_to_csv(phonemes_src, phones_src, dest_dir, word_radius,\
 
   probmatrix = comatrix
   probmatrix[phones] = probmatrix[phones].div(comatrix['count'] *\
-          phoneme_radius * 2, axis=0)
+          phoneme_radius * 2, axis=1)
   probmatrix.to_csv(output_path + "_prob_comatrix.csv")
 
 def multiple_phonemes_to_csv(phonemes_src_dir, phones_src,\
