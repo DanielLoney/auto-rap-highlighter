@@ -9,6 +9,7 @@ tensor2tensor = "==1.6.6"
 tensorflow = "==1.8.0"
 numpy = "==1.19.5"
 pandas = "*"
+nltk = "*"
 
 [dev-packages]
 
