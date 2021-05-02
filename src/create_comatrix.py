@@ -1,5 +1,5 @@
 import argparse, os
-import comatrix_utils
+import utils
 
 parser = argparse.ArgumentParser()
 # Args needed: separator, input directory, output directory, phones path
@@ -32,9 +32,9 @@ if (args.phoneme_list == phoneme_list_default and\
 if (args.word_list == word_list_default and\
         not os.path.exists('./' + word_list_default)):
   os.mkdir('./' + word_list_default)
-comatrix_utils.texts_to_words(args.input_dir_path, args.word_list)
-comatrix_utils.words_to_phonemes(args.word_list, args.phoneme_list,\
+utils.texts_to_words(args.input_dir_path, args.word_list)
+utils.words_to_phonemes(args.word_list, args.phoneme_list,\
         args.model_dir_path)
-comatrix_utils.multiple_phonemes_to_csv(args.phoneme_list, args.phones_path,\
+utils.multiple_phonemes_to_csv(args.phoneme_list, args.phones_path,\
         args.output_dir_path, word_radius=args.word_radius,\
         separator=args.separator)
