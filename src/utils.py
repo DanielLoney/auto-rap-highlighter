@@ -1,6 +1,7 @@
 import re, os, glob, errno
 import numpy as np
 import pandas as pd
+from syllabifier import syllabifyARPA
 
 def texts_to_words(src, dest):
   if not os.path.exists(src):
@@ -64,19 +65,26 @@ def __phones_to_list(src):
 def phoneme_list_to_lines(phoneme_list, src, \
                           ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z-' \n]",\
                           separator=''):
-  text_file = open(src, 'rt')
-  text = text_file.read()
-  text = re.sub(ignored_reg_ex, "", text)
-  text_file.close()
-  lines = text.splitlines()
-
-  curr_phoneme_idx = 0
+  def get_lines(src, ignored_reg_ex):
+    text_file = open(src, 'rt')
+    text = text_file.read()
+    text = re.sub(ignored_reg_ex, "", text)
+    text_file.close()
+    return text.splitlines()
 
   def skip_empty(idx):
     while idx < len(phoneme_list) and phoneme_list[idx] == '':
       idx += 1
     return idx
 
+  def syllabifyARPA_to_word_list(syllabifyARPAoutput):
+    new_word = []
+    for syllable in syllabifyARPAoutput:
+      new_word.append(syllable.split(' '))
+    return new_word
+
+  lines = get_lines(src, ignored_reg_ex)
+  curr_phoneme_idx = 0
   phoneme_lines = []
   for line in lines:
     print(line)
@@ -101,7 +109,7 @@ def phoneme_list_to_lines(phoneme_list, src, \
           curr_phoneme = phoneme_list[curr_phoneme_idx]
         else:
           break
-      phoneme_line.append(arpa_arr)
+      phoneme_line += syllabifyARPA_to_word_list(syllabifyARPA(arpa_arr))
       phoneme_line.append(separator)
       curr_phoneme_idx += 1
     if len(phoneme_line) != 0:
@@ -109,8 +117,7 @@ def phoneme_list_to_lines(phoneme_list, src, \
 
     print(phoneme_line)
     phoneme_lines.append(phoneme_line)
-  return phoneme_lines
-
+  return phoneme_line
 def phonemes_to_csv(phonemes_src, phones_src, dest_dir, word_radius,\
         separator=''):
   if not os.path.exists(phonemes_src):
