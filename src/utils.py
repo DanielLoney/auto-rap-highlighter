@@ -61,6 +61,56 @@ def __phones_to_list(src):
       phones.append(line.split("\t", 1)[0])
   return phones
 
+def phoneme_list_to_lines(phoneme_list, src, \
+                          ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z-' \n]",\
+                          separator=''):
+  text_file = open(src, 'rt')
+  text = text_file.read()
+  text = re.sub(ignored_reg_ex, "", text)
+  text_file.close()
+  lines = text.splitlines()
+
+  curr_phoneme_idx = 0
+
+  def skip_empty(idx):
+    while idx < len(phoneme_list) and phoneme_list[idx] == '':
+      idx += 1
+    return idx
+
+  phoneme_lines = []
+  for line in lines:
+    print(line)
+    processed_line = re.sub("\n", "", line)
+    num_words = -1
+
+    if processed_line == "":
+      num_words = 0
+    else:
+      num_words = len(processed_line.split(' '))
+    phoneme_line = []
+
+    curr_phoneme_idx = skip_empty(curr_phoneme_idx)
+    curr_phoneme = phoneme_list[curr_phoneme_idx]
+    for _ in range(num_words):
+      curr_phoneme = phoneme_list[curr_phoneme_idx]
+      arpa_arr = []
+      while curr_phoneme != '':
+        arpa_arr.append(curr_phoneme)
+        curr_phoneme_idx += 1
+        if curr_phoneme_idx < len(phoneme_list):
+          curr_phoneme = phoneme_list[curr_phoneme_idx]
+        else:
+          break
+      phoneme_line.append(arpa_arr)
+      phoneme_line.append(separator)
+      curr_phoneme_idx += 1
+    if len(phoneme_line) != 0:
+      phoneme_line.pop()
+
+    print(phoneme_line)
+    phoneme_lines.append(phoneme_line)
+  return phoneme_lines
+
 def phonemes_to_csv(phonemes_src, phones_src, dest_dir, word_radius,\
         separator=''):
   if not os.path.exists(phonemes_src):
