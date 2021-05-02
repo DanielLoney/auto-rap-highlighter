@@ -20,6 +20,7 @@ $ git clone https://github.com/cmusphinx/g2p-seq2seq.git
 $ sudo python setup.py install (from the g2p-seq2seq directory)
 ```
 ## Running the Rhyming Dictionary
+This section is based on the README from the cmusphinx/g2p-seq2seq repository
 First run the pythonenv
 ```
 $ pipenv shell
