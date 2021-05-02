@@ -14,10 +14,15 @@ In the rhymerap repo directory:
 ```
 $ pipenv install
 ```
-6. Install g2p-seq2seq
+6. Install cmusphinx/g2p-seq2seq
 ```
 $ git clone https://github.com/cmusphinx/g2p-seq2seq.git
-$ sudo python setup.py install (from the g2p-seq2seq directory)
+$ python setup.py install (from the g2p-seq2seq directory)
+```
+7. Install vgautam/arpabet-syllabifier
+```
+$ git clone https://github.com/vgautam/arpabet-syllabifier
+$ python setup.py install (from the arpabet-syllabifier directory)
 ```
 ## Running the Rhyming Dictionary
 This section is based on the README from the cmusphinx/g2p-seq2seq repository
