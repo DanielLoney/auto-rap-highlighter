@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: ALINE
 #
+# Includes Changes By Daniel Loney
+#   Daniel Loney <danieljloney@gmail.com> (ARPABET compatibility)
+#     ARPABET compatibility includes:
+#       - Addition of ɝ, ʌ, ɑ
+#       - Conversion of U to ʊ
+#       - Conversion of I to ɪ
+#
 # Copyright (C) 2001-2021 NLTK Project
 # Author: Greg Kondrak <gkondrak@ualberta.ca>
 #         Geoff Bacon <bacon@berkeley.edu> (Python port)
-#         Daniel Loney <danieljloney@gmail.com> (ARPABET compatibility)
-#           ARPABET compatibility includes:
-#               - Addition of ɝ, ʌ, ɑ
-#               - Conversion of U to ʊ
-#               - Conversion of I to ɪ
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
 
