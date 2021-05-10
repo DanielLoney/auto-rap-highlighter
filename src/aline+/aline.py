@@ -127,7 +127,7 @@ R_c = [
     "syllabic",
     "voice",
 ]
-# 'high' taken out of R_v because same as manner
+# 'high' placed back in
 R_v = [
     "back",
     "lateral",
@@ -139,6 +139,7 @@ R_v = [
     "round",
     "syllabic",
     "voice",
+    "high",
 ]
 
 # Flattened feature matrix (Kondrak 2002: 56)
