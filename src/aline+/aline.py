@@ -1058,7 +1058,7 @@ feature_matrix = {
         "long": "minus",
         "aspirated": "minus",
     },
-    "I": {
+    "ɪ": {
         "place": "vowel",
         "manner": "vowel2",
         "syllabic": "plus",
