@@ -988,7 +988,7 @@ feature_matrix = {
         "long": "minus",
         "aspirated": "minus",
     },
-    "U": {
+    "ʊ": {
         "place": "vowel",
         "manner": "vowel2",
         "syllabic": "plus",
