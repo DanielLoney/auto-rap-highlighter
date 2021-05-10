@@ -4,6 +4,11 @@
 # Copyright (C) 2001-2021 NLTK Project
 # Author: Greg Kondrak <gkondrak@ualberta.ca>
 #         Geoff Bacon <bacon@berkeley.edu> (Python port)
+#         Daniel Loney <danieljloney@gmail.com> (ARPABET compatibility)
+#           ARPABET compatibility includes:
+#               - Addition of ɝ, ʌ, ɑ
+#               - Conversion of U to ʊ
+#               - Conversion of I to ɪ
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
 
@@ -127,7 +132,7 @@ R_c = [
     "syllabic",
     "voice",
 ]
-# 'high' placed back in
+# 'high' placed back into comparing vowels with other vowels
 R_v = [
     "back",
     "lateral",
@@ -918,7 +923,7 @@ feature_matrix = {
         "long": "minus",
         "aspirated": "minus",
     },
-    "ɑ": {
+    "ɑ": { # Added new IPA
         "place": "vowel",
         "manner": "vowel2",
         "syllabic": "plus",
@@ -932,7 +937,7 @@ feature_matrix = {
         "long": "minus",
         "aspirated": "minus",
     },
-    "ʌ": {
+    "ʌ": { # Added new IPA
         "place": "vowel",
         "manner": "vowel2",
         "syllabic": "plus",
@@ -1002,7 +1007,7 @@ feature_matrix = {
         "long": "minus",
         "aspirated": "minus",
     },
-    "ɝ": {
+    "ɝ": { # Added new IPA
         "place": "vowel",
         "manner": "vowel2",
         "syllabic": "plus",
@@ -1030,7 +1035,7 @@ feature_matrix = {
         "long": "minus",
         "aspirated": "minus",
     },
-    "ʊ": {
+    "ʊ": { # Changed from "U"
         "place": "vowel",
         "manner": "vowel2",
         "syllabic": "plus",
@@ -1100,7 +1105,7 @@ feature_matrix = {
         "long": "minus",
         "aspirated": "minus",
     },
-    "ɪ": {
+    "ɪ": { # Changed from I to ɪ
         "place": "vowel",
         "manner": "vowel2",
         "syllabic": "plus",
