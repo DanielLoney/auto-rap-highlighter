@@ -1,23 +1,33 @@
-import re, os, glob, errno
+import re, os, glob, errno, nltk
 import numpy as np
 import pandas as pd
 from syllabifier import syllabifyARPA
 
-def texts_to_words(src, dest):
+def text_to_words(src, dest, filler):
   if not os.path.exists(src):
-    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
-  for filepath in glob.glob(src + "/*.txt"):
-    file = open(filepath, 'rt')
-    text = file.read()
-    file.close()
-    text = re.sub("[\[].*?[\]]|[^a-zA-Z-' \n]", "", text)
-    words = [x.lower() for x in text.split()]
-    base_name = os.path.splitext(os.path.basename("rap_lyrics/juicy.txt"))[0]
-    # Overwrite by default
-    with open(dest + "/" + base_name + "_word_list.txt", "w") as file:
-      for word in words[:-1]:
+    print(src + " does not exist")
+    return
+  if not os.path.exists(dest):
+    print(dest + " does not exist")
+    return
+  file = open(src, 'rt')
+  text = file.read()
+  file.close()
+  text = re.sub("[\[].*?[\]]|[^a-zA-Z-' \n]", "", text)
+  words = [x.lower() for x in text.split()]
+  base_name = os.path.splitext(os.path.basename("rap_lyrics/juicy.txt"))[0]
+  try:
+    cmudict = nltk.corpus.cmudict.dict()
+  except LookupError:
+    nltk.download('cmudict')
+    cmudict = nltk.corpus.cmudict.dict()
+  with open(dest + "/" + base_name + "_word_list.txt", "w") as file:
+    for i, word in enumerate(words[:-1]):
+      if word not in cmudict:
         file.write(word + "\n")
-      file.write(words[-1])
+        words[i] = filler
+    file.write(words[-1])
+  return word
 
 def words_to_phonemes(src_dir, dest_dir, model_dir):
   if not os.path.exists(src_dir):
