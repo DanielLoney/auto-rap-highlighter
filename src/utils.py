@@ -72,7 +72,7 @@ def __phones_to_list(src):
       phones.append(line.split("\t", 1)[0])
   return phones
 
-def phoneme_list_to_lines(phoneme_list, src, \
+def phoneme_list_to_syllable_lines(phoneme_list, src, \
                           ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z-' \n]",\
                           separator=''):
   def get_lines(src, ignored_reg_ex):
