@@ -58,6 +58,12 @@ WER: 0.302
 Accuracy: 0.698
 ```
 
+## Creating Rhyming Groups
+```
+$ pipenv shell
+$ python3 src/lyrics2groups.py temp/text/juicy.txt cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress temp/comatrices
+```
+
 ## Creating Phoneme Co-occurrence Matrices from text
 Run the scripts/create_comatrix.py file from the python env.
 For example:
