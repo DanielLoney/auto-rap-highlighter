@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from syllabifier import syllabifyARPA
 
-def text_to_words(src, dest, filler):
+def text_to_word_list(src, dest, filler):
   if not os.path.exists(src):
     print(src + " does not exist")
     return
@@ -139,7 +139,7 @@ def phoneme_list_to_syllable_lines(phoneme_list, src, \
 
     print(phoneme_line)
     phoneme_lines.append(phoneme_line)
-  return phoneme_line
+  return phoneme_lines
 '''
 DEPRECATED
 
