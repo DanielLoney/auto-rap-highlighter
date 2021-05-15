@@ -27,7 +27,7 @@ def text_to_word_list(src, dest, filler):
         file.write(word + "\n")
         words[i] = filler
     file.write(words[-1])
-  return word
+  return words
 
 def words_to_phonemes(src_dir, dest_dir, model_dir):
   if not os.path.exists(src_dir):
@@ -60,7 +60,7 @@ def phonemes_to_list(unknown_src, word_list, filler, separator=""):
         word_phonemes = line.split(" ", 1)[1][:-1]
         unknown_word_phonemes.append(word_phonemes.split(" "))
     return unknown_word_phonemes
-
+  
   unknown_word_phonemes = get_unknown_word_phonemes(unknown_src)
   phonemes_list = []
   cmudict = nltk.corpus.cmudict.dict()
@@ -79,10 +79,10 @@ def phonemes_to_list(unknown_src, word_list, filler, separator=""):
     else:
       # first pronunciation of word in cmudict
       pronunciation = cmudict[word][0]
-      phonemes_list += remove_stress(pronunciation)
-      phonemes_list.append(separator)
+      phonemes_list += remove_stress(pronunciation) 
+    phonemes_list.append(separator)
   phonemes_list = phonemes_list[:-1]
-  return phonemes_lis
+  return phonemes_list
 
 def phoneme_list_to_syllable_lines(phoneme_list, src, \
                           ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z-' \n]",\
