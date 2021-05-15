@@ -45,23 +45,44 @@ def words_to_phonemes(src_dir, dest_dir, model_dir):
       " --model_dir " + model_dir + " --output " + output
     os.system(cmd)
 
-def __phonemes_to_list(src, separator=""):
-  if not os.path.exists(src):
-    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
+def phonemes_to_list(unknown_src, word_list, filler, separator=""):
+  if not os.path.exists(unknown_src):
+    print(unknown_src + " does not exist")
+    return
   phoneme_lists = []
-  with open(src, "r") as phonemes:
-    lines = phonemes.readlines()
-    # list of phonemes with separator
-    phonemes = []
-    for idx, line in enumerate(lines):
-      # remove first word of each line and new line character
-      word_phonemes = line.split(" ", 1)[1][:-1]
-      for phoneme in word_phonemes.split(" "):
-        phonemes.append(phoneme)
-      phonemes.append(separator)
-    phonemes = phonemes[:-1]
-  return phonemes
+  def get_unknown_word_phonemes(src):
+    with open(src, "r") as phonemes:
+      lines = phonemes.readlines()
+      # list of phonemes with separator
+      unknown_word_phonemes = []
+      for idx, line in enumerate(lines):
+        # remove first word of each line and new line character
+        word_phonemes = line.split(" ", 1)[1][:-1]
+        unknown_word_phonemes.append(word_phonemes.split(" "))
+    return unknown_word_phonemes
+  
+  unknown_word_phonemes = get_unknown_word_phonemes(unknown_src)
+  phonemes_list = []
+  cmudict = nltk.corpus.cmudict.dict()
+  counter = 0
+  def remove_stress(pronunciation):
+    ret = []
+    for arpa in pronunciation:
+      arpa = ''.join([l for l in arpa if not l.isdigit()])
+      ret.append(arpa)
+    return ret
 
+  for word in word_list:
+    if word == filler:
+      phonemes_list += unknown_word_phonemes[counter]
+      counter += 1
+    else:
+      # first pronunciation of word in cmudict
+      pronunciation = cmudict[word][0]
+      phonemes_list += remove_stress(pronunciation)
+      phonemes_list.append(separator)
+  phonemes_list = phonemes_list[:-1]
+  return phonemes_lis
 def __phones_to_list(src):
   if not os.path.exists(src):
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
