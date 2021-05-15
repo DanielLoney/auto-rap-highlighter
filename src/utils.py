@@ -86,7 +86,7 @@ def phonemes_to_list(unknown_src, word_list, filler, separator=""):
 
 def phoneme_list_to_syllable_lines(phoneme_list, src, \
                           ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z-' \n]",\
-                          separator=''):
+                          separator='', print_lines=False):
   def get_lines(src, ignored_reg_ex):
     text_file = open(src, 'rt')
     text = text_file.read()
@@ -109,7 +109,8 @@ def phoneme_list_to_syllable_lines(phoneme_list, src, \
   curr_phoneme_idx = 0
   phoneme_lines = []
   for line in lines:
-    print(line)
+    if print_lines:
+      print(line)
     processed_line = re.sub("\n", "", line)
     num_words = -1
 
@@ -137,7 +138,8 @@ def phoneme_list_to_syllable_lines(phoneme_list, src, \
     if len(phoneme_line) != 0:
       phoneme_line.pop()
 
-    print(phoneme_line)
+    if print_lines:
+      print(phoneme_line)
     phoneme_lines.append(phoneme_line)
   return phoneme_lines
 '''
