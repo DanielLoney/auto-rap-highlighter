@@ -60,7 +60,7 @@ def phonemes_to_list(unknown_src, word_list, filler, separator=""):
         word_phonemes = line.split(" ", 1)[1][:-1]
         unknown_word_phonemes.append(word_phonemes.split(" "))
     return unknown_word_phonemes
-  
+
   unknown_word_phonemes = get_unknown_word_phonemes(unknown_src)
   phonemes_list = []
   cmudict = nltk.corpus.cmudict.dict()
@@ -83,15 +83,6 @@ def phonemes_to_list(unknown_src, word_list, filler, separator=""):
       phonemes_list.append(separator)
   phonemes_list = phonemes_list[:-1]
   return phonemes_lis
-def __phones_to_list(src):
-  if not os.path.exists(src):
-    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
-  with open(src, "r") as phones:
-    lines = phones.readlines()
-    phones = []
-    for idx, line in enumerate(lines):
-      phones.append(line.split("\t", 1)[0])
-  return phones
 
 def phoneme_list_to_syllable_lines(phoneme_list, src, \
                           ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z-' \n]",\
@@ -149,6 +140,19 @@ def phoneme_list_to_syllable_lines(phoneme_list, src, \
     print(phoneme_line)
     phoneme_lines.append(phoneme_line)
   return phoneme_line
+'''
+DEPRECATED
+
+def __phones_to_list(src):
+  if not os.path.exists(src):
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), src)
+  with open(src, "r") as phones:
+    lines = phones.readlines()
+    phones = []
+    for idx, line in enumerate(lines):
+      phones.append(line.split("\t", 1)[0])
+  return phones
+
 def phonemes_to_csv(phonemes_src, phones_src, dest_dir, word_radius,\
         separator=''):
   if not os.path.exists(phonemes_src):
@@ -246,4 +250,4 @@ def multiple_phonemes_to_csv(phonemes_src_dir, phones_src,\
         dest_dir, word_radius, separator=''):
   for filepath in glob.glob(phonemes_src_dir + "/*.txt"):
     phonemes_to_csv(filepath, phones_src, dest_dir, word_radius, separator)
-
+'''
