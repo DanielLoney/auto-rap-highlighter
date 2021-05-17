@@ -1,5 +1,5 @@
 # Based on : https://github.com/jhasegaw/phonecodes/blob/master/src/phonecode_tables.py
-arpabet2ALINE = {
+arpabet2aline_dict = {
     'AA':'ɑ',
     'AE':'æ',
     'AH':'ʌ',
@@ -47,3 +47,12 @@ arpabet2ALINE = {
     'Z':'z',
     'ZH':'ʒ'
 }
+'''Converts list of arpabet phonemes to aline IPA phonemes'''
+def arpa2aline(arpa_phonemes):
+    aline_phonemes = []
+    for arpa in arpa_phonemes:
+        if arpa not in arpabet2aline_dict:
+            raise Exception(arpa + ' not found in list of known arpabet\
+                phonemes')
+        aline_phonemes.append(arpabet2aline_dict[arpa])
+    return aline_phonemes
