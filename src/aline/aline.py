@@ -60,7 +60,7 @@ C_sub = 35  # Substitutions
 C_exp = 45  # Expansions/compressions
 C_vwl = 5  # Vowel/consonant relative weight (decreased from 10)
 
-consonants = [
+consonants = set([
     "B",
     "N",
     "R",
@@ -121,7 +121,7 @@ consonants = [
     "χ",
     "ʐ",
     "w",
-]
+])
 
 # Relevant features for comparing consonants and vowels
 R_c = [
