@@ -60,12 +60,25 @@ class GroupingTests(unittest.TestCase):
         # d(san, san) < d(san, son) < d(san, it)
         self.assertTrue(d1 < d2 < d3)
 
-    # Test extraneous phonemes
+    # Extraneous coda should affect distance
     def test_extraneous_coda(self):
         an = ['AH', 'N']
         ant = ['AH', 'N', 'T']
         # d(an, ant) > 0
         self.assertTrue(linkage.distance(an, ant) > 0)
 
-    # Triangle Inequality
+        spain = ['S', 'P', 'EY', 'N']
+        spay = ['S', 'P', 'EY']
+        # d(spain, spay) > 0
+        self.assertTrue(linkage.distance(spain, spay) > 0)
+
+    # Extraneous onset should not affect distance
+    def test_extraneous_onset(self):
+        pin = ['P', 'IH', 'N']
+        spin = ['S', 'P', 'IH', 'N']
+        # d(pin, spin) == 0
+        self.assertTrue(linkage.distance(spin, pin) == 0)
+
+    # TODO Alignment with two ipas in the same tuple
+    # Triangle Inequality?
 
