@@ -28,7 +28,7 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
     current_verse = 0
     current_verse_dict = dict() # current_verse_dict[line_#] = set(group_ids)
 
-    live_groups = dict() # live_groups[_id] = {'group': value,
+    live_groups = dict() # live_groups[_id] = {'group': set(syllables),
                          #       'most_recent_line': int}
 
     # First iteration: Look left
@@ -54,8 +54,10 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
 
         for syllable in syllable_lines:
 
+            (phoneme_difference, borrow) = (0, True)
+            sorted_base_syllable_linkages = get_sorted_linkages(syllable)
             # Check group linkage value of set([syllable]) and
-            # existing sets
+            # live_groups
 
             # Check group linkage value of
             #   set([syllable] + next phoneme)
@@ -92,4 +94,13 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
             raise Exception('Id {} not in live groups'.format(_id))
         return live_groups[_id]['most_recent_line'] < \
                 line_number - max_live_lines
+
+    # Returns [(group_id, linkage_distance)] sorted by linkage_distance
+    def get_sorted_linkages(syllable):
+        live_group_linkages = [(_id, \
+            linkage.group_average_linkage(live_groups[_id]['group'], \
+            set(syllable))) \
+            for _id in live_groups]
+
+        return sorted(live_group_linkages, key=lambda pair: pair[1])
 
