@@ -1,8 +1,8 @@
 import unittest
 from aline import aline, arpa2aline
-import linkage
+import linkage, clustering
 
-class GroupingTests(unittest.TestCase):
+class linkage_tests(unittest.TestCase):
     san = ['S', 'AH', 'N']
 
     def test_arpa2aline(self):
@@ -32,7 +32,7 @@ class GroupingTests(unittest.TestCase):
     def test_distance_identity(self):
         d1 = linkage.distance(self.san, self.san)
         self.assertEqual(d1, 0)
-        print("d(san, san) = d(san,san) = {}".format(d1))
+        # print("d(san, san) = d(san,san) = {}".format(d1))
 
     def test_distance_diff_onsets(self):
         san2 = self.san
@@ -60,8 +60,8 @@ class GroupingTests(unittest.TestCase):
         d3 = linkage.distance(self.san, it)
         # d(san, san) < d(san, son) < d(san, it)
         self.assertTrue(d1 < d2 < d3)
-        print("d(san, san) = {} < d(san, son) = {} < d(san, it) = {}".format(\
-                d1, d2, d3))
+        # print("d(san, san) = {} < d(san, son) = {} < d(san, it) = {}".format(\
+        #        d1, d2, d3))
     # Extraneous coda should affect distance
     def test_extraneous_coda(self):
         an = ['AH', 'N']
@@ -69,14 +69,14 @@ class GroupingTests(unittest.TestCase):
         d = linkage.distance(an, ant)
         # d(an, ant) > 0
         self.assertTrue(d > 0)
-        print("d(an, ant) = {} > 0".format(d))
+        # print("d(an, ant) = {} > 0".format(d))
 
         spain = ['S', 'P', 'EY', 'N']
         spay = ['S', 'P', 'EY']
         d = linkage.distance(spain, spay)
         # d(spain, spay) > 0
         self.assertTrue(d > 0)
-        print("d(spain, spay) = {} > 0".format(d))
+        # print("d(spain, spay) = {} > 0".format(d))
 
     # Extraneous onset should not affect distance
     def test_extraneous_onset(self):
@@ -88,3 +88,21 @@ class GroupingTests(unittest.TestCase):
     # TODO Alignment with two ipas in the same tuple
     # Triangle Inequality?
 
+class clustering_tests(unittest.TestCase):
+    def test_get_num_coda_consonants(self):
+        spin = ['S', 'P', 'IH', 'N']
+        self.assertTrue(clustering.get_num_coda_consonants(spin) == 1)
+
+    def test_no_longer_live(self):
+        live_groups = {0 : {'group': set(), 'most_recent_line': 0},\
+                       1 : {'group': set(), 'most_recent_line': 1}}
+        current_line = 3
+        max_live_lines = 2
+
+        _0_still_live = clustering.still_live(live_groups, current_line,\
+            max_live_lines, 0)
+        self.assertTrue(_0_still_live == False)
+
+        _1_still_live = clustering.still_live(live_groups, current_line,\
+            max_live_lines, 1)
+        self.assertTrue(_1_still_live == True)
