@@ -50,14 +50,20 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
         else:
             # Update live_groups
             for _id in live_groups:
-                if no_longer_live(_id): del live_groups[_id]
+                if no_longer_live(live_groups, _id): del live_groups[_id]
 
-        for syllable in syllable_lines:
+        for syllable_i, syllable in enumerate(syllable_lines):
 
-            (phoneme_difference, borrow) = (0, True)
-            sorted_base_syllable_linkages = get_sorted_linkages(syllable)
             # Check group linkage value of set([syllable]) and
             # live_groups
+            (best_phoneme_difference, best_direction) = (0, True)
+            sorted_base_syllable_linkages = get_sorted_linkages(syllable)
+
+            # Get # of coda consonants in syllable
+            num_coda_cs = 0
+            for c in syllable[::-1]:
+                if c in linkage.arpa_vowels:
+                    num_coda_cs += 1
 
             # Check group linkage value of
             #   set([syllable] + next phoneme)
@@ -89,12 +95,6 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
         # Repeat this iteration until total group average sum stagnates
         # TODO (For x steps?)
 
-    def no_longer_live(_id):
-        if _id not in live_groups:
-            raise Exception('Id {} not in live groups'.format(_id))
-        return live_groups[_id]['most_recent_line'] < \
-                line_number - max_live_lines
-
     # Returns [(group_id, linkage_distance)] sorted by linkage_distance
     def get_sorted_linkages(syllable):
         live_group_linkages = [(_id, \
@@ -103,4 +103,19 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
             for _id in live_groups]
 
         return sorted(live_group_linkages, key=lambda pair: pair[1])
+
+def no_longer_live(live_groups, _id):
+    if _id not in live_groups:
+        raise Exception('Id {} not in live groups'.format(_id))
+    return live_groups[_id]['most_recent_line'] < \
+            line_number - max_live_lines
+
+def get_num_consonants(syllable):
+    num_coda_cs = 0
+    for c in syllable[::-1]:
+        if c not in linkage.arpa_vowels:
+            num_coda_cs += 1
+        else:
+            break
+    return num_coda_cs
 
