@@ -17,13 +17,13 @@ class GroupingTests(unittest.TestCase):
     def test_align(self):
         self.assertListEqual(\
             linkage.align(self.san, self.san),\
-            [[('s', 's'), ('ʌ', 'ʌ'), ('n', 'n')]])
+            [('s', 's'), ('ʌ', 'ʌ'), ('n', 'n')])
 
         # Alignment for all arpa and itself gives a tuple of its converted
         # IPA
         d = arpa2aline.arpabet2aline_dict
         for arpa in d:
-            alignment = [[(ipa, ipa) for ipa in d[arpa]]]
+            alignment = [(ipa, ipa) for ipa in d[arpa]]
             with self.subTest(arpa=arpa):
                 self.assertListEqual(\
                     linkage.align([arpa], [arpa]),\
@@ -32,6 +32,7 @@ class GroupingTests(unittest.TestCase):
     def test_distance_identity(self):
         d1 = linkage.distance(self.san, self.san)
         self.assertEqual(d1, 0)
+        print("d(san, san) = d(san,san) = {}".format(d1))
 
     def test_distance_diff_onsets(self):
         san2 = self.san
@@ -59,18 +60,23 @@ class GroupingTests(unittest.TestCase):
         d3 = linkage.distance(self.san, it)
         # d(san, san) < d(san, son) < d(san, it)
         self.assertTrue(d1 < d2 < d3)
-
+        print("d(san, san) = {} < d(san, son) = {} < d(san, it) = {}".format(\
+                d1, d2, d3))
     # Extraneous coda should affect distance
     def test_extraneous_coda(self):
         an = ['AH', 'N']
         ant = ['AH', 'N', 'T']
+        d = linkage.distance(an, ant)
         # d(an, ant) > 0
-        self.assertTrue(linkage.distance(an, ant) > 0)
+        self.assertTrue(d > 0)
+        print("d(an, ant) = {} > 0".format(d))
 
         spain = ['S', 'P', 'EY', 'N']
         spay = ['S', 'P', 'EY']
+        d = linkage.distance(spain, spay)
         # d(spain, spay) > 0
-        self.assertTrue(linkage.distance(spain, spay) > 0)
+        self.assertTrue(d > 0)
+        print("d(spain, spay) = {} > 0".format(d))
 
     # Extraneous onset should not affect distance
     def test_extraneous_onset(self):
