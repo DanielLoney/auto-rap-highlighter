@@ -61,9 +61,10 @@ def distance(syllable1, syllable2, extraneous_coda_penalty = 10, \
         print("Total distance is {}".format(distance))
     return distance
 
-def group_average_linkage(set1, set2, distance=distance):
+def group_average_linkage(group1, group2, distance=distance):
     _sum = 0
-    for s1 in set1:
-        for s2 in set2:
+    assert type(group1) == list and type(group2) == list
+    for s1 in group1:
+        for s2 in group2:
             _sum += distance(s1, s2)
-    return _sum / (len(set1) * len(set2))
+    return _sum / (len(group1) * len(group2))

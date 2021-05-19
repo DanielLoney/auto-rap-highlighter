@@ -88,6 +88,23 @@ class linkage_tests(unittest.TestCase):
     # TODO Alignment with two ipas in the same tuple
     # Triangle Inequality?
 
+    def test_group_average_linkage(self):
+        pin = ['P', 'IH', 'N']
+        spin = ['S', 'P', 'IH', 'N']
+        group1 = [tuple(pin)]
+        group2 = [tuple(spin)]
+        self.assertTrue(linkage.group_average_linkage(group1, group2) == 0)
+
+        pint = ['P', 'IH', 'N', 'T']
+        group2 = [tuple(pint)]
+        self.assertTrue(linkage.group_average_linkage(group1, group2) > 0)
+
+        group3 = [tuple(pin), tuple(pin), tuple(pint)]
+        self.assertTrue(linkage.group_average_linkage(group1, group3) ==\
+                linkage.distance(tuple(pin), tuple(pint)) / 3)
+
+
+
 class clustering_tests(unittest.TestCase):
     def test_get_num_coda_consonants(self):
         spin = ['S', 'P', 'IH', 'N']
@@ -106,3 +123,49 @@ class clustering_tests(unittest.TestCase):
         _1_still_live = clustering.still_live(live_groups, current_line,\
             max_live_lines, 1)
         self.assertTrue(_1_still_live == True)
+
+    def text_next_syllable_num_onsets(self):
+        with self.assertRaises(AssertionError):
+            clustering.next_syllable_num_onsets(0, [])
+            clustering.next_syllable_num_onsets(0, [['AH'], ''])
+            clustering.next_syllable_num_onsets(0, [['AH'], ['AH'], ['AH']])
+
+        syllable_line = [['AH'], '', ['T', 'AH'], '', ['S', 'P', 'AH']]
+        self.assertTrue(clustering.next_syllable_num_onsets(0, syllable_line\
+                == 1))
+        self.assertTrue(clustering.next_syllable_num_onsets(2, syllable_line\
+                == 2))
+
+    def test_has_next_syllable(self):
+        syllable_line = [['AH'], '', ['AH']]
+        self.assertTrue(clustering.has_next_syllable(0, syllable_line)\
+                == True)
+        self.assertTrue(clustering.has_next_syllable(2, syllable_line)\
+                == False)
+
+    def test_get_sorted_linkages(self):
+        live_groups = {0: {'group': [tuple(['AH'])],\
+            'most_recent_line': 0}}
+
+        syllable = ['AH']
+        expected = [(0, 0)]
+        self.assertTrue(clustering.get_sorted_linkages(syllable, live_groups)\
+                == expected)
+
+    def test_best_num_consonants_to_give(self):
+        live_groups = {0: {'group': [tuple(['AH'])],\
+            'most_recent_line': 0}}
+        syllable_line = [['AH', 'T', 'T', 'T', 'T'], '', ['AH']]
+        current_index = 0
+        (_, best_linkage_value) = \
+            clustering.get_best_group_id_linkage_distance(\
+                clustering.get_sorted_linkages(syllable_line[current_index],\
+                    live_groups))
+
+        d = linkage.group_average_linkage([tuple(['AH', 'T'])],\
+                [tuple(['T', 'T', 'T', 'AH'])])
+        best_num_cs = clustering.best_num_consonants_to_give(syllable_line,\
+            live_groups, best_linkage_value, current_index)
+        # print("Got (best average linkage, phoneme difference) =\
+        #    {}".format(best_num_cs))
+        self.assertTrue(best_num_cs == (d, -3))
