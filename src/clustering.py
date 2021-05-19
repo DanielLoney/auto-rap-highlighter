@@ -25,11 +25,12 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
 
     # group id to group
     next_group_id = 0
-    groups = dict() # groups[group_id] = set(syllables)
+    groups = dict() # groups[group_id] = list(syllables)
 
     # Keep track of verse_first_line_#, current groupings_dict
-    current_verse = 0
-    current_verse_dict = dict() # current_verse_dict[line_#] = set(group_ids)
+    current_verse_starting_line = 0
+    verse_dict = dict() # current_verse_dict[line_#] = set(group_ids)
+    current_verse_groups = set()
 
     live_groups = dict() # live_groups[_id] = {'group': set(syllables),
                          #       'most_recent_line': int}
@@ -40,12 +41,13 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
         # If empty line, save and reset variables
         if len(line) == 0:
             # save
-            if len(current_verse_dict) > 0:
-                verse_num_to_line_groups[current_verse] = current_verse_dict
+            if len(verse_dict) > 0:
+                verse_num_to_line_groups[current_verse_starting_line] =\
+                        current_verse_groups
 
             # reset
-            current_verse = line_number + 1
-            current_verse_dict = dict()
+            current_verse_starting_line = line_number + 1
+            current_verse_groups
 
             # reset live_groups
             live_groups = dict()
@@ -70,43 +72,48 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
                 live_groups)
 
 
-            (_, best_linkage_value) = \
+            (best_group_id, best_linkage_value) = \
                 get_best_group_id_linkage_distance(\
                     sorted_base_syllable_linkages)
 
-            # Check group linkage value of
-            #   set([syllable] + next phoneme)
-            #   and set([syllable] - final phoneme)
-            # If grouping average increases, keep trying
-
-            (best_linkage_value, best_phoneme_difference) = \
-                best_num_consonants_to_give(syllable_line, live_groups,\
-                    best_linkage_value, syllable_i)
-
-            # Use the best version of the syllable and group it
-
-            # If all groupings are still over the threshold put the
-            # unaltered version of the syllable as its own group
-
-            # Update line_groups
-            # Update groups[id] = group
-            # Update live_groups[id] = group
-            # Update live_groups[id]['most_recent_line']
-
-        current_verse_dict[line_number] = line_groups
+            if best_linkage_value <= linkage_criterion:
+                # Add the syllable to the best_group_id
+                updated_group = groups[best_group_id].append(syllable)
+                # Update groups
+                groups[best_group_id] = updated_group
+                # Update live_groups
+                live_groups[best_group_id] = \
+                    {'group': updated_group, 'most_recent_line': line_number}
+            else:
+                # Add the syllable as its own new group
+                new_group = [syllable]
+                # Update groups
+                groups[next_group_id] = new_group
+                # Update live_groups
+                live_groups[next_group_id] = \
+                    {'group': new_group, 'most_recent_line': line_number}
+                # Add to verse groups
+                current_verse_groups.add(next_group_id)
+                next_group_id += 1
 
     # Calculate sum of all syllable group averages
 
-    # Future iterations: Look right, and left again
-        # Again attempt the first iteration, this time if there is a
-        # better grouping than the current one, change it.
+    # Second iteration:
+        # For each syllable
+            # determine its average linkage to its group
+            # Remove it from its group
+            # Attempt to borrow phonemes and see if its linkage_distance
+            #   improves
+            # Add it to its new group with better linkage distance
+            #   or back to its old group
 
-            # Check groupings ahead
-            # Check groupings behind
-        # Repeat this iteration until total group average sum stagnates
-        # TODO (For x steps?)
+            #(best_group_id, best_linkage_value, best_phoneme_difference) = \
+            #    best_num_consonants_to_give(syllable_line, live_groups,\
+            #        best_linkage_value, syllable_i)
 
-    pass
+
+
+    return groups
 
 # Returns [(group_id, linkage_distance)] sorted by linkage_distance
 def get_sorted_linkages(syllable, live_groups):
@@ -117,7 +124,10 @@ def get_sorted_linkages(syllable, live_groups):
     return sorted(live_group_linkages, key=lambda pair: pair[1])
 
 def get_best_group_id_linkage_distance(sorted_linkages):
-    return sorted_linkages[0]
+    if len(sorted_linkages) == 0:
+        return (-1, float('inf'))
+    else:
+        return sorted_linkages[0]
 
 def still_live(live_groups, line_number, max_live_lines, _id):
     if _id not in live_groups:
@@ -156,6 +166,8 @@ def best_num_consonants_to_give(syllable_line, live_groups,\
     curr_syllable = syllable_line[current_index]
     num_coda_cs = get_num_coda_consonants(curr_syllable)
     best_phoneme_difference = 0
+    best_group_id = -1
+
     if has_next_syllable(current_index, syllable_line):
         while num_coda_cs + best_phoneme_difference - 1 > 0 and\
             next_syllable_num_onsets(current_index, syllable_line) <\
@@ -167,15 +179,16 @@ def best_num_consonants_to_give(syllable_line, live_groups,\
             #        best_phoneme_difference - 1))
             new_sorted_linkages = get_sorted_linkages(new_syllable, live_groups)
 
-            (_, new_linkage_value) =\
+            (new_group_id, new_linkage_value) =\
                     get_best_group_id_linkage_distance(new_sorted_linkages)
 
             # update
             if new_linkage_value < best_linkage_value:
                 best_linkage_value = new_linkage_value
+                best_group_id = new_group_id
                 best_phoneme_difference -= 1
             # End loop if no longer improving
             else:
                 break
 
-    return (best_linkage_value, best_phoneme_difference)
+    return (best_group_id, best_linkage_value, best_phoneme_difference)

@@ -1,6 +1,7 @@
 import unittest
 from aline import aline, arpa2aline
 import linkage, clustering
+from tests.juicy_syllable_lines import juicy_syllable_lines
 
 class linkage_tests(unittest.TestCase):
     san = ['S', 'AH', 'N']
@@ -152,9 +153,18 @@ class clustering_tests(unittest.TestCase):
         self.assertTrue(clustering.get_sorted_linkages(syllable, live_groups)\
                 == expected)
 
+        live_groups = {0: {'group': [tuple(['IH'])],\
+            'most_recent_line': 0}, 1: {'group': [tuple(['AH'])],\
+            'most_recent_line': 0}}
+        expected = [(1, 0), (0, linkage.distance(syllable, ['IH']))]
+
+        self.assertTrue(clustering.get_sorted_linkages(syllable, live_groups)\
+                == expected)
+
     def test_best_num_consonants_to_give(self):
         live_groups = {0: {'group': [tuple(['AH'])],\
-            'most_recent_line': 0}}
+                'most_recent_line': 0},\
+                1: {'group': [tuple(['IH'])], 'most_recent_line': 0}}
         syllable_line = [['AH', 'T', 'T', 'T', 'T'], '', ['AH']]
         current_index = 0
         (_, best_linkage_value) = \
@@ -168,4 +178,17 @@ class clustering_tests(unittest.TestCase):
             live_groups, best_linkage_value, current_index)
         # print("Got (best average linkage, phoneme difference) =\
         #    {}".format(best_num_cs))
-        self.assertTrue(best_num_cs == (d, -3))
+        self.assertTrue(best_num_cs == (0, d, -3))
+
+        live_groups = {1: {'group': [tuple(['AH'])],\
+                'most_recent_line': 0},\
+                0: {'group': [tuple(['IH'])], 'most_recent_line': 0}}
+        best_num_cs = clustering.best_num_consonants_to_give(syllable_line,\
+            live_groups, best_linkage_value, current_index)
+        # print("Got (best average linkage, phoneme difference) =\
+        #    {}".format(best_num_cs))
+        self.assertTrue(best_num_cs == (1, d, -3))
+
+    def test_clustering(self):
+        print("Groups are: \
+            {}".format(clustering.cluster(juicy_syllable_lines)))
