@@ -14,6 +14,9 @@ returns:
     2D array of syllable lines, 2nd dimension is tuples of
     (syllable array, rhyming_group_id) or a separator
 '''
+MAX_CODA_CONSONANTS = 5
+MAX_ONSET_CONSONANTS = 3
+
 def cluster(syllable_lines, linkage_criterion=20, separator='',
         max_live_lines=3):
 
@@ -66,8 +69,6 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
             sorted_base_syllable_linkages = get_sorted_linkages(syllable,\
                 live_groups)
 
-            # Get # of coda consonants in syllable
-            num_coda_cs = get_num_coda_consonants(syllable)
 
             (_, best_linkage_value) = \
                 get_best_group_id_linkage_distance(\
@@ -82,10 +83,6 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
                 best_num_consonants_to_give(syllable_line, live_groups,\
                     best_linkage_value, syllable_i)
 
-            # Reset num_coda_cs
-            num_coda_cs = get_num_coda_consonants(syllable)
-
-
             # Use the best version of the syllable and group it
 
             # If all groupings are still over the threshold put the
@@ -95,7 +92,6 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
             # Update groups[id] = group
             # Update live_groups[id] = group
             # Update live_groups[id]['most_recent_line']
-            pass
 
         current_verse_dict[line_number] = line_groups
 
@@ -110,12 +106,13 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
         # Repeat this iteration until total group average sum stagnates
         # TODO (For x steps?)
 
+    pass
+
 # Returns [(group_id, linkage_distance)] sorted by linkage_distance
 def get_sorted_linkages(syllable, live_groups):
     live_group_linkages = [(_id, \
         linkage.group_average_linkage(live_groups[_id]['group'], \
-            [tuple(syllable)])) \
-        for _id in live_groups]
+            [tuple(syllable)])) for _id in live_groups]
 
     return sorted(live_group_linkages, key=lambda pair: pair[1])
 
@@ -135,6 +132,7 @@ def get_num_coda_consonants(syllable):
             num_coda_cs += 1
         else:
             break
+    assert num_coda_cs >= 0 and num_coda_cs <= MAX_CODA_CONSONANTS
     return num_coda_cs
 
 def next_syllable_num_onsets(current_index, syllable_line,\
@@ -145,6 +143,7 @@ def next_syllable_num_onsets(current_index, syllable_line,\
     while syllable_line[current_index + 2][num_cs] not in linkage.arpa_vowels:
         num_cs += 1
 
+    assert num_cs >= 0 and num_cs <= MAX_ONSET_CONSONANTS
     return num_cs
 
 def has_next_syllable(current_index, syllable_line):
@@ -157,25 +156,26 @@ def best_num_consonants_to_give(syllable_line, live_groups,\
     curr_syllable = syllable_line[current_index]
     num_coda_cs = get_num_coda_consonants(curr_syllable)
     best_phoneme_difference = 0
-    while has_next_syllable(current_index, syllable_line) and\
-        num_coda_cs + best_phoneme_difference - 1 > 0 and\
-        next_syllable_num_onsets(current_index, syllable_line) < 3:
+    if has_next_syllable(current_index, syllable_line):
+        while num_coda_cs + best_phoneme_difference - 1 > 0 and\
+            next_syllable_num_onsets(current_index, syllable_line) <\
+                MAX_ONSET_CONSONANTS:
 
-        new_syllable = curr_syllable[:(best_phoneme_difference - 1)]
-        #print("Checking new_syllable: {}".format(new_syllable))
-        # print("Codas left = {}".format(num_coda_cs +\
-        #        best_phoneme_difference - 1))
-        new_sorted_linkages = get_sorted_linkages(new_syllable, live_groups)
+            new_syllable = curr_syllable[:(best_phoneme_difference - 1)]
+            #print("Checking new_syllable: {}".format(new_syllable))
+            # print("Codas left = {}".format(num_coda_cs +\
+            #        best_phoneme_difference - 1))
+            new_sorted_linkages = get_sorted_linkages(new_syllable, live_groups)
 
-        (_, new_linkage_value) =\
-                get_best_group_id_linkage_distance(new_sorted_linkages)
+            (_, new_linkage_value) =\
+                    get_best_group_id_linkage_distance(new_sorted_linkages)
 
-        # update
-        if new_linkage_value < best_linkage_value:
-            best_linkage_value = new_linkage_value
-            best_phoneme_difference -= 1
-        # End loop if no longer improving
-        else:
-            break
+            # update
+            if new_linkage_value < best_linkage_value:
+                best_linkage_value = new_linkage_value
+                best_phoneme_difference -= 1
+            # End loop if no longer improving
+            else:
+                break
 
     return (best_linkage_value, best_phoneme_difference)
