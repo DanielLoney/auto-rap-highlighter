@@ -64,6 +64,12 @@ $ pipenv shell
 $ python3 src/lyrics2groups.py temp/text/juicy.txt cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress temp/comatrices
 ```
 
+## Running tests
+From the source directory, run:
+```
+.../src$ python3 -m unittest tests.tests
+```
+
 ## Creating Phoneme Co-occurrence Matrices from text
 Run the scripts/create_comatrix.py file from the python env.
 For example:
