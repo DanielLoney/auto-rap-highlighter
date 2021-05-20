@@ -2,6 +2,7 @@ import unittest
 from aline import aline, arpa2aline
 import linkage, clustering
 from tests.juicy_syllable_lines import juicy_syllable_lines
+from tests.figaro_syllable_lines import figaro_syllable_lines, figaro_text
 
 class linkage_tests(unittest.TestCase):
     san = ['S', 'AH', 'N']
@@ -197,6 +198,7 @@ class clustering_tests(unittest.TestCase):
         self.assertTrue(best_num_cs == (1, d, -3))
 
     def test_clustering(self):
-        (groups, verse_dict) = clustering.cluster(juicy_syllable_lines)
-        print("Groups are: {}".format(str(groups)))
-        print("Verse dict is: {}".format(verse_dict))
+        (groups, verse_dict) = clustering.cluster(figaro_syllable_lines)
+        groups.print_with_text(figaro_text)
+        #print("Groups are: {}".format(str(groups)))
+        #print("Verse dict is: {}".format(verse_dict))
