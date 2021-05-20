@@ -1,4 +1,4 @@
-import argparse, os
+import argparse, os, glob
 import utils
 
 parser = argparse.ArgumentParser()
@@ -32,6 +32,17 @@ if (args.unknown_list_dir == unknown_list_default and\
 
 filler = '**'
 separator = ''
+
+# Remove previous unknown lists
+for f in glob.glob(args.unknown_list_dir + '/*'):
+    print("Unknown list deleted: {}".format(f))
+    os.remove(f)
+
+# Remove previous phoneme lists
+for f in glob.glob(args.phoneme_list + '/*'):
+    print("Phoneme list deleted: {}".format(f))
+    os.remove(f)
+
 word_list = utils.text_to_word_list(args.input_text,\
         args.unknown_list_dir, filler)
 #print("Word list is " + str(word_list))
@@ -39,7 +50,8 @@ utils.words_to_phonemes(args.unknown_list_dir, args.phoneme_list,\
         args.model_dir_path)
 def get_unknown_phoneme_path(directory):
     if (len(os.listdir(directory)) != 1):
-      raise Exception("Expected only 1 unknown list in " + directory)
+      raise Exception("Expected only 1 unknown list in " + directory +\
+              "Found {}".format(os.listdir(directory)))
     path = directory + '/' + os.listdir(directory)[0]
     return path
 unknown_phoneme_path = get_unknown_phoneme_path(args.phoneme_list)
