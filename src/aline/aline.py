@@ -194,12 +194,12 @@ salience = {
     "syllabic": 5,
     "place": 40,
     "manner": 50,
-    "voice": 5,  # decreased from 10
-    "nasal": 20,  # increased from 10
+    "voice": 10,  # Was 5
+    "nasal": 10,  # Was 20
     "retroflex": 10,
     "lateral": 10,
     "aspirated": 5,
-    "long": 0,  # decreased from 1
+    "long": 1,  # Was 0
     "high": 3,  # decreased from 5
     "back": 2,  # decreased from 5
     "round": 2,  # decreased from 5
