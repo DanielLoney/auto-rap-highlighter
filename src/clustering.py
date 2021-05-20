@@ -1,4 +1,6 @@
+from copy import deepcopy
 import linkage
+from groups import Groups
 
 '''
 args:
@@ -17,15 +19,12 @@ returns:
 MAX_CODA_CONSONANTS = 5
 MAX_ONSET_CONSONANTS = 3
 
-def cluster(syllable_lines, linkage_criterion=20, separator='',
+def cluster(syllable_lines, linkage_criterion=7, separator='',
         max_live_lines=3):
-
-    verse_num_to_line_groups = dict()
-    # Retain dict[verse_first_line_#] = dict[line_#] = set(group_ids)
 
     # group id to group
     next_group_id = 0
-    groups = dict() # groups[group_id] = list(syllables)
+    groups = Groups(syllable_lines) # groups[group_id] = list(syllables)
 
     # Keep track of verse_first_line_#, current groupings_dict
     current_verse_starting_line = 0
@@ -37,29 +36,33 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
 
     # First iteration: Look left
     for line_number, line in enumerate(syllable_lines):
+        #print("Line: {}".format(line))
 
         # If empty line, save and reset variables
         if len(line) == 0:
             # save
-            if len(verse_dict) > 0:
-                verse_num_to_line_groups[current_verse_starting_line] =\
+            if len(current_verse_groups) > 0:
+                verse_dict[current_verse_starting_line] =\
                         current_verse_groups
 
             # reset
             current_verse_starting_line = line_number + 1
-            current_verse_groups
+            current_verse_groups = set()
 
             # reset live_groups
             live_groups = dict()
             continue
         else:
             # Update live_groups
+            new_live_groups = deepcopy(live_groups)
             for _id in live_groups:
                 if not still_live(live_groups, line_number, max_live_lines,\
                         _id):
-                    del live_groups[_id]
+                    del new_live_groups[_id]
+            live_groups = new_live_groups
 
-        for syllable_i, syllable in enumerate(syllable_lines):
+        for syllable_i, syllable in enumerate(line):
+            #print("Syllable: {}".format(syllable))
 
             # Skip separators
             if syllable == separator:
@@ -76,25 +79,32 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
                 get_best_group_id_linkage_distance(\
                     sorted_base_syllable_linkages)
 
+            # print("Live groups: {}".format(live_groups))
+            # print("Groups: {}".format(groups))
+
             if best_linkage_value <= linkage_criterion:
+                # print("Best linkage value {} < criterion {}. Adding {} to group {}".format(best_linkage_value, linkage_criterion,\
+                    #syllable, best_group_id))
                 # Add the syllable to the best_group_id
-                updated_group = groups[best_group_id].append(syllable)
                 # Update groups
-                groups[best_group_id] = updated_group
+                groups.add_syllable(best_group_id, line_number, syllable_i)
+                updated_group = groups.get_group(best_group_id)
                 # Update live_groups
                 live_groups[best_group_id] = \
                     {'group': updated_group, 'most_recent_line': line_number}
             else:
                 # Add the syllable as its own new group
                 new_group = [syllable]
+                # print("Adding new group: {}".format(new_group))
                 # Update groups
-                groups[next_group_id] = new_group
+                groups.add_group(next_group_id, [(line_number, syllable_i)])
                 # Update live_groups
                 live_groups[next_group_id] = \
                     {'group': new_group, 'most_recent_line': line_number}
                 # Add to verse groups
                 current_verse_groups.add(next_group_id)
                 next_group_id += 1
+
 
     # Calculate sum of all syllable group averages
 
@@ -111,9 +121,7 @@ def cluster(syllable_lines, linkage_criterion=20, separator='',
             #    best_num_consonants_to_give(syllable_line, live_groups,\
             #        best_linkage_value, syllable_i)
 
-
-
-    return groups
+    return (groups, verse_dict)
 
 # Returns [(group_id, linkage_distance)] sorted by linkage_distance
 def get_sorted_linkages(syllable, live_groups):

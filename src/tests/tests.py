@@ -89,6 +89,13 @@ class linkage_tests(unittest.TestCase):
     # TODO Alignment with two ipas in the same tuple
     # Triangle Inequality?
 
+    def test_multiple_aligned_phonemes(self):
+        ak = ['AH', 'K']
+        ows = ['OW', 'Z']
+        oak = ['OW', 'K']
+        self.assertTrue(linkage.distance(ak, ows) > \
+                linkage.distance(ak, oak))
+
     def test_group_average_linkage(self):
         pin = ['P', 'IH', 'N']
         spin = ['S', 'P', 'IH', 'N']
@@ -190,5 +197,6 @@ class clustering_tests(unittest.TestCase):
         self.assertTrue(best_num_cs == (1, d, -3))
 
     def test_clustering(self):
-        print("Groups are: \
-            {}".format(clustering.cluster(juicy_syllable_lines)))
+        (groups, verse_dict) = clustering.cluster(juicy_syllable_lines)
+        print("Groups are: {}".format(str(groups)))
+        print("Verse dict is: {}".format(verse_dict))

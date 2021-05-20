@@ -4,6 +4,8 @@ from aline import aline, arpa2aline
 arpa_vowels = set(['AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER', 'EY',\
         'IH', 'IY', 'OW', 'OY', 'UH', 'UW'])
 
+UNMATCHED = '-'
+
 def syllable_list_to_no_onset_ipa(syllable):
     def remove_onset(syllable):
         first_vowel_index = 0
@@ -27,8 +29,8 @@ def align(phonemes1, phonemes2, already_ipa=False):
 '''Returns an decimal distance between list of phonemes, syllable1 and
    list of phonemes, syllable2'''
 def distance(syllable1, syllable2, extraneous_coda_penalty = 10, \
-        vowel_delta_weight = 1, consonant_delta_weight = 1,\
-        debug_printing=False):
+        vowel_delta_weight = 1, consonant_delta_weight = 1,
+        unmatched_phoneme_penalty = 10, debug_printing=False):
 
     if debug_printing:
         print("Syllables are: {} and {}".format(syllable1, syllable2))
@@ -36,16 +38,24 @@ def distance(syllable1, syllable2, extraneous_coda_penalty = 10, \
     ipas2 = syllable_list_to_no_onset_ipa(syllable2)
 
     alignment = align(ipas1, ipas2, already_ipa=True)
+    if debug_printing:
+        print("Alignments are: {}".format(alignment))
     distance = 0
     # Sum the deltas for each aligned phoneme
-    for (p1, p2) in alignment:
-        weight = consonant_delta_weight if p1 in aline.consonants\
-            else vowel_delta_weight
-        distance_component = weight * aline.delta(p1, p2)
-        distance += distance_component
-        if debug_printing:
-            print("Distance component for {} and {} is {}".format(\
-                p1, p2, distance_component))
+    for (a1, a2) in alignment:
+        alignment_distance_component = 0
+        for p1 in a1:
+            for p2 in a2:
+                if p1 == UNMATCHED or p2 == UNMATCHED:
+                    alignment_distance_component += \
+                            unmatched_phoneme_penalty
+                else:
+                    weight = consonant_delta_weight if p1 in\
+                            aline.consonants else vowel_delta_weight
+                    distance_component = weight * aline.delta(p1, p2)
+                    alignment_distance_component += distance_component
+        alignment_distance_component /= (len(a1) * len(a2))
+        distance += alignment_distance_component
 
     # Penalize unaligned phonemes
     num_phonemes = len(ipas1) if len(ipas1) > len(ipas2) else len(ipas2)
