@@ -28,9 +28,9 @@ def align(phonemes1, phonemes2, already_ipa=False):
 
 '''Returns an decimal distance between list of phonemes, syllable1 and
    list of phonemes, syllable2'''
-def distance(syllable1, syllable2, extraneous_coda_penalty = 10, \
-        vowel_delta_weight = 1, consonant_delta_weight = 1,
-        unmatched_phoneme_penalty = 10, debug_printing=False):
+def distance(syllable1, syllable2, extraneous_coda_penalty = 5, \
+        vowel_delta_weight = 2, consonant_delta_weight = 1,
+        unmatched_phoneme_penalty = 5, debug_printing=False):
 
     if debug_printing:
         print("Syllables are: {} and {}".format(syllable1, syllable2))
