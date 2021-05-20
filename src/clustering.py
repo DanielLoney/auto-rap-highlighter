@@ -19,8 +19,8 @@ returns:
 MAX_CODA_CONSONANTS = 5
 MAX_ONSET_CONSONANTS = 3
 
-def cluster(syllable_lines, linkage_criterion=7, separator='',
-        max_live_lines=3):
+def cluster(syllable_lines, linkage_criterion=10, separator='',
+        max_live_lines=1):
 
     # group id to group
     next_group_id = 0
@@ -89,6 +89,8 @@ def cluster(syllable_lines, linkage_criterion=7, separator='',
                 # Update groups
                 groups.add_syllable(best_group_id, line_number, syllable_i)
                 updated_group = groups.get_group(best_group_id)
+                #print("Syllable {} in group {}".format(syllable,\
+                #    updated_group))
                 # Update live_groups
                 live_groups[best_group_id] = \
                     {'group': updated_group, 'most_recent_line': line_number}
