@@ -1,5 +1,5 @@
 import argparse, os, glob
-import utils
+import utils, clustering
 
 parser = argparse.ArgumentParser()
 # Args needed: separator, input directory, output directory, phones path
@@ -9,8 +9,8 @@ parser.add_argument("phones_path",
         help='.phones file path with format the same as cmudict.phones')
 parser.add_argument("model_dir_path",
         help='g2p model directory path')
-parser.add_argument("output_dir_path",
-        help='output directory path with for <name>_comatrix.csv files')
+#parser.add_argument("output_dir_path",
+#        help='output directory path with for <name>_comatrix.csv files')
 phoneme_list_default = 'phoneme_lists'
 parser.add_argument("-n", "--phoneme_list", \
         default=phoneme_list_default, \
@@ -61,4 +61,8 @@ phoneme_list = utils.phonemes_to_list(unknown_phoneme_path, word_list,\
 #print("Phoneme List is " + str(phoneme_list))
 syllable_lines = utils.phoneme_list_to_syllable_lines(phoneme_list,\
         args.input_text, separator=separator)
-print(str(syllable_lines))
+
+(groups, _) = clustering.cluster(syllable_lines)
+with open(args.input_text) as f:
+    text = f.readlines()
+groups.print_with_text(text)
