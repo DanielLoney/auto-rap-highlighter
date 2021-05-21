@@ -30,9 +30,13 @@ def text_to_word_list(src, dest, filler):
     cmudict = nltk.corpus.cmudict.dict()
   with open(dest + "/" + base_name + "_word_list.txt", "w") as file:
     for i, word in enumerate(words[:-1]):
+      # TODO Check apostraphe, replace words[i]
       if word not in cmudict:
-        file.write(word + "\n")
-        words[i] = filler
+        if re.sub("'", '', word) in cmudict:
+            words[i] = re.sub("'", '', word)
+        else:
+            file.write(word + "\n")
+            words[i] = filler
     file.write(words[-1])
   return words
 
