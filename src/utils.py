@@ -2,6 +2,16 @@ import re, os, glob, errno, nltk
 import numpy as np
 import pandas as pd
 from syllabifier import syllabifyARPA
+import num2words
+
+def preprocess_text(src, ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z0-9-' \n]"):
+  file = open(src, 'rt')
+  text = file.read()
+  file.close()
+  text = re.sub(ignored_reg_ex, "", text)
+  text = re.sub("-", " ", text)
+  text = re.sub(r"(\d+)", lambda x: num2words.num2words(int(x.group(0))), text)
+  return text
 
 def text_to_word_list(src, dest, filler):
   if not os.path.exists(src):
@@ -10,12 +20,9 @@ def text_to_word_list(src, dest, filler):
   if not os.path.exists(dest):
     print(dest + " does not exist")
     return
-  file = open(src, 'rt')
-  text = file.read()
-  file.close()
-  text = re.sub("[\[].*?[\]]|[^a-zA-Z-' \n]", "", text)
+  text = preprocess_text(src)
   words = [x.lower() for x in text.split()]
-  base_name = os.path.splitext(os.path.basename("rap_lyrics/juicy.txt"))[0]
+  base_name = os.path.splitext(os.path.basename(src))[0]
   try:
     cmudict = nltk.corpus.cmudict.dict()
   except LookupError:
@@ -84,14 +91,10 @@ def phonemes_to_list(unknown_src, word_list, filler, separator=""):
   phonemes_list = phonemes_list[:-1]
   return phonemes_list
 
-def phoneme_list_to_syllable_lines(phoneme_list, src, \
-                          ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z-' \n]",\
+def phoneme_list_to_syllable_lines(phoneme_list, src,\
                           separator='', print_lines=False):
-  def get_lines(src, ignored_reg_ex):
-    text_file = open(src, 'rt')
-    text = text_file.read()
-    text = re.sub(ignored_reg_ex, "", text)
-    text_file.close()
+  def get_lines(src):
+    text = preprocess_text(src)
     return text.splitlines()
 
   def skip_empty(idx):
@@ -105,7 +108,7 @@ def phoneme_list_to_syllable_lines(phoneme_list, src, \
       new_word.append(syllable.split(' '))
     return new_word
 
-  lines = get_lines(src, ignored_reg_ex)
+  lines = get_lines(src)
   curr_phoneme_idx = 0
   phoneme_lines = []
   for line in lines:
@@ -119,6 +122,10 @@ def phoneme_list_to_syllable_lines(phoneme_list, src, \
     else:
       num_words = len(processed_line.split(' '))
     phoneme_line = []
+
+    if num_words == 0:
+      phoneme_lines.append(phoneme_line)
+      continue
 
     curr_phoneme_idx = skip_empty(curr_phoneme_idx)
     curr_phoneme = phoneme_list[curr_phoneme_idx]
