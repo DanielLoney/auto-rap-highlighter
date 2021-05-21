@@ -5,9 +5,11 @@ black_text = "\u001b[30m"
 white_background = "\u001b[47m"
 black_background = "\u001b[40m"
 # Backgrounds:
-backgrounds = [red, green, blue, magenta, cyan, yellow] =\
-    ['\u001b[41m', '\u001b[42m', '\u001b[44m',\
-    '\u001b[45m', '\u001b[46m', '\u001b[43m']
+backgrounds = [red, green, blue, magenta, cyan, yellow, bright_black,\
+        bright_cyan, bright_magenta, bright_blue] =\
+    ['\033[37;41m', '\u001b[37;42m', '\u001b[37;44m',\
+    '\u001b[37;45m', '\u001b[46m', '\u001b[43m', '\u001b[37;100m',\
+    '\u001b[30;106m', '\u001b[30;105m', '\u001b[37;104m']
 
 class Groups:
     def __init__(self, syllable_lines):
