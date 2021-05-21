@@ -61,7 +61,7 @@ Accuracy: 0.698
 ## Creating Rhyming Groups
 ```
 $ pipenv shell
-$ python3 src/lyrics2groups.py temp/text/juicy.txt cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress temp/comatrices
+$ python3 src/lyrics2groups.py temp/text/figaro.txt cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress
 ```
 
 ## Running tests
