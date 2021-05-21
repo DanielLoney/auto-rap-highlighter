@@ -29,7 +29,7 @@ def align(phonemes1, phonemes2, already_ipa=False):
 '''Returns an decimal distance between list of phonemes, syllable1 and
    list of phonemes, syllable2'''
 def distance(syllable1, syllable2, extraneous_coda_penalty = 4.9, \
-        vowel_delta_weight = 2.6, consonant_delta_weight = 1,
+        vowel_delta_weight = 2.6, consonant_delta_weight = 0.7,
         unmatched_phoneme_penalty = 4.9, debug_printing=False):
 
     if debug_printing:
