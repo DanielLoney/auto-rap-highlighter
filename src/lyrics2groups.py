@@ -1,5 +1,6 @@
 import argparse, os, glob
 import utils, clustering
+from ansi2html import Ansi2HTMLConverter
 
 parser = argparse.ArgumentParser()
 # Args needed: separator, input directory, output directory, phones path
@@ -9,8 +10,8 @@ parser.add_argument("phones_path",
         help='.phones file path with format the same as cmudict.phones')
 parser.add_argument("model_dir_path",
         help='g2p model directory path')
-#parser.add_argument("output_dir_path",
-#        help='output directory path with for <name>_comatrix.csv files')
+parser.add_argument("-o", "--output_dir_path",
+        help='output directory path with for <name>.html file')
 phoneme_list_default = 'phoneme_lists'
 parser.add_argument("-n", "--phoneme_list", \
         default=phoneme_list_default, \
@@ -65,4 +66,11 @@ syllable_lines = utils.phoneme_list_to_syllable_lines(phoneme_list,\
 (groups, _) = clustering.cluster(syllable_lines)
 with open(args.input_text) as f:
     text = f.readlines()
-groups.print_with_text(text)
+# Output
+if args.output_dir_path is not None:
+    html = Ansi2HTMLConverter().convert(groups.str_with_text(text))
+    base_name = os.path.splitext(os.path.basename(args.input_text))[0]
+    with open(args.output_dir_path + '/' + base_name + '.html', 'w') as f:
+        f.write(html)
+else:
+    print(groups.str_with_text(text))

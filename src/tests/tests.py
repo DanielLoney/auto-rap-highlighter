@@ -199,6 +199,4 @@ class clustering_tests(unittest.TestCase):
 
     def test_clustering(self):
         (groups, verse_dict) = clustering.cluster(figaro_syllable_lines)
-        groups.print_with_text(figaro_text)
-        #print("Groups are: {}".format(str(groups)))
-        #print("Verse dict is: {}".format(verse_dict))
+        print(groups.str_with_text(figaro_text))

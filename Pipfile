@@ -11,6 +11,7 @@ numpy = "==1.19.5"
 pandas = "*"
 nltk = "*"
 num2words = "*"
+ansi2html = "*"
 
 [dev-packages]
 

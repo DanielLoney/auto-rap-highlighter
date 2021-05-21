@@ -82,11 +82,13 @@ class Groups:
         return black_text + white_background +\
                 '\n'.join(self.to_text_lines()) + reset
 
-    def print_with_text(self, text):
-        print(black_text + white_background)
+    def str_with_text(self, text):
+        s = ''
+        s += black_text + white_background
         syllable_color_lines = self.to_text_lines()
         for line_i, line in enumerate(text):
-            print(line)
-            print(syllable_color_lines[line_i] + '\n')
-        print(reset)
+            s += line
+            s += syllable_color_lines[line_i] + '\n'
+        s += reset
+        return s
 
