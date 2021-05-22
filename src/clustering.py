@@ -83,8 +83,6 @@ def cluster(syllable_lines, linkage_criterion=10, separator='',
             # print("Groups: {}".format(groups))
 
             if best_linkage_value <= linkage_criterion:
-                # print("Best linkage value {} < criterion {}. Adding {} to group {}".format(best_linkage_value, linkage_criterion,\
-                    #syllable, best_group_id))
                 # Add the syllable to the best_group_id
                 # Update groups
                 groups.add_syllable(best_group_id, line_number, syllable_i)
@@ -106,9 +104,6 @@ def cluster(syllable_lines, linkage_criterion=10, separator='',
                 # Add to verse groups
                 current_verse_groups.add(next_group_id)
                 next_group_id += 1
-
-
-    # Calculate sum of all syllable group averages
 
     # Second iteration:
         # For each syllable
