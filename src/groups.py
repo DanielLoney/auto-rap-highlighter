@@ -6,11 +6,12 @@ white_background = "\u001b[47m"
 black_background = "\u001b[40m"
 # Backgrounds:
 backgrounds = [red, green, blue, magenta, cyan, yellow, bright_black,\
-        bright_cyan, bright_magenta, bright_blue, bright_yellow] =\
+        bright_cyan, bright_magenta, bright_blue, bright_yellow,\
+        bright_green, bright_red] =\
     ['\033[37;41m', '\u001b[37;42m', '\u001b[37;44m',\
     '\u001b[37;45m', '\u001b[46m', '\u001b[43m', '\u001b[37;100m',\
     '\u001b[30;106m', '\u001b[30;105m', '\u001b[37;104m',
-    '\u001b[30;103m']
+    '\u001b[30;103m', '\u001b[30;102m', '\u001b[30;101m']
 
 class Groups:
     def __init__(self, syllable_lines):
@@ -89,7 +90,9 @@ class Groups:
         syllable_color_lines = self.to_text_lines()
         for line_i, line in enumerate(text):
             s += line
-            s += syllable_color_lines[line_i] + '\n'
+            s += syllable_color_lines[line_i]
+            if len(self.syllable_lines[line_i]) > 0:
+                s += '\n\n'
         s += reset
         return s
 
