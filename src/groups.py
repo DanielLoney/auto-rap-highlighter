@@ -25,6 +25,14 @@ class Groups:
         self.id_to_group[group_id].add(index)
         self.index_to_group[index] = group_id
 
+    def remove_syllable(self, index):
+        assert index in self.index_to_group
+        group_id = self.index_to_group[index]
+        del self.index_to_group[index]
+        self.id_to_group[group_id].remove(index)
+        if len(self.id_to_group[group_id]) == 0:
+            del self.id_to_group[group_id]
+
     def add_group(self, group_id, group):
         self.id_to_group[group_id] = set(group)
         for index in group:
@@ -36,6 +44,39 @@ class Groups:
             syllable = self.get_syllable(index)
             l.append(syllable)
         return l
+
+    def get_groups_in_range(self, curr_line_i, line_radius):
+        groups_in_range = set()
+        ranges = []
+        ranges.append(range(curr_line_i, curr_line_i + line_radius + 1))
+        ranges.append(\
+                range(curr_line_i - 1, curr_line_i - line_radius - 1, -1))
+
+        actual_range = []
+        for r in ranges:
+            for l_i in r:
+                if not (0 <= l_i and l_i < len(self.syllable_lines)):
+                    break
+                # Elif end of verse
+                elif len(self.syllable_lines[l_i]) == 0:
+                    break
+                else:
+                    actual_range.append(l_i)
+
+        for l_i in actual_range:
+            if not (0 <= l_i and l_i < len(self.syllable_lines)):
+                break
+            # Elif end of verse
+            elif len(self.syllable_lines[l_i]) == 0:
+                break
+            for w_i, word in enumerate(self.syllable_lines[l_i]):
+                for p_i, pronun in enumerate(word):
+                    for s_i in range(len(pronun)):
+                        index = (l_i, w_i, p_i, s_i)
+                        if index in self.index_to_group:
+                            groups_in_range.add(\
+                                    self.index_to_group[index])
+        return groups_in_range
 
     def get_syllable(self, index):
         value = self.syllable_lines
@@ -57,11 +98,6 @@ class Groups:
         # Assign a color to each group
         group_id_to_color = {}
         colors = cycle(backgrounds)
-        for _id in range(len(self.id_to_group)):
-            if len(self.id_to_group[_id]) < 2:
-                group_id_to_color[_id] = white_background
-            else:
-                group_id_to_color[_id] = next(colors)
 
         str_lines = []
         for line_number, line in enumerate(self.syllable_lines):
@@ -77,6 +113,13 @@ class Groups:
                     index = (line_number, w_i, p_i, syl_i)
                     if index in self.index_to_group:
                         group_id = self.index_to_group[index]
+                        if group_id not in group_id_to_color:
+                            if len(self.id_to_group[group_id]) < 2:
+                                group_id_to_color[group_id] =\
+                                        white_background
+                            else:
+                                group_id_to_color[group_id] =\
+                                        next(colors)
                         color = group_id_to_color[group_id]
                         syl_string = color + syl_string +\
                             white_background + black_text
