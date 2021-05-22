@@ -4,6 +4,13 @@ import pandas as pd
 from syllabifier import syllabifyARPA
 import num2words
 
+
+try:
+  CMUDICT = nltk.corpus.cmudict.dict()
+except LookupError:
+  nltk.download('cmudict')
+  CMUDICT = nltk.corpus.cmudict.dict()
+
 def preprocess_text(src, ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z0-9-' \n]"):
   file = open(src, 'rt')
   text = file.read()
@@ -23,16 +30,10 @@ def text_to_word_list(src, dest, filler):
   text = preprocess_text(src)
   words = [x.lower() for x in text.split()]
   base_name = os.path.splitext(os.path.basename(src))[0]
-  try:
-    cmudict = nltk.corpus.cmudict.dict()
-  except LookupError:
-    nltk.download('cmudict')
-    cmudict = nltk.corpus.cmudict.dict()
   with open(dest + "/" + base_name + "_word_list.txt", "w") as file:
     for i, word in enumerate(words[:-1]):
-      # TODO Check apostraphe, replace words[i]
-      if word not in cmudict:
-        if re.sub("'", '', word) in cmudict:
+      if word not in CMUDICT:
+        if re.sub("'", '', word) in CMUDICT:
             words[i] = re.sub("'", '', word)
         else:
             file.write(word + "\n")
@@ -51,108 +52,129 @@ def words_to_phonemes(src_dir, dest_dir, model_dir):
             model_dir)
   for input in glob.glob(src_dir + "/*.txt"):
     output = dest_dir + '/' + ''.join(os.path.basename(input) \
-      .split("_")[:-2]) + "_phoneme_list.txt"
+      .split("_")[:-2]) + "_pronunciations_list.txt"
     cmd = "g2p-seq2seq --decode " + input + \
       " --model_dir " + model_dir + " --output " + output
     os.system(cmd)
 
-def phonemes_to_list(unknown_src, word_list, filler, separator=""):
+'''
+returns list of pronunciations for each word in the word_list, subbing in
+    unknown words
+
+    syllable_n = [phoneme_1, phoneme_2, ..., phoneme_n]
+    pronunciation_n = [syllable_1, syllable_2, ..., syllable_n]
+    word_n = [pronunciation_1, ..., pronunciation_n]
+    pronunciations_list = [word_1, word_2, ..., word_n]
+'''
+def word_list_to_pronunciations_list(unknown_src, word_list,\
+        filler):
   if not os.path.exists(unknown_src):
     print(unknown_src + " does not exist")
     return
-  phoneme_lists = []
-  def get_unknown_word_phonemes(src):
-    with open(src, "r") as phonemes:
-      lines = phonemes.readlines()
-      # list of phonemes with separator
-      unknown_word_phonemes = []
-      for idx, line in enumerate(lines):
-        # remove first word of each line and new line character
-        word_phonemes = line.split(" ", 1)[1][:-1]
-        unknown_word_phonemes.append(word_phonemes.split(" "))
-    return unknown_word_phonemes
-  
-  unknown_word_phonemes = get_unknown_word_phonemes(unknown_src)
-  phonemes_list = []
-  cmudict = nltk.corpus.cmudict.dict()
-  counter = 0
-  def remove_stress(pronunciation):
-    ret = []
-    for arpa in pronunciation:
-      arpa = ''.join([l for l in arpa if not l.isdigit()])
-      ret.append(arpa)
-    return ret
 
+  pronunciations_list = []
+  unknown_word_phonemes = get_unknown_word_phonemes(unknown_src)
+  counter = 0
   for word in word_list:
+    assert len(word) > 0
     if word == filler:
-      phonemes_list += unknown_word_phonemes[counter]
+      pronunciations = [unknown_word_phonemes[counter]]
       counter += 1
     else:
-      # first pronunciation of word in cmudict
-      pronunciation = cmudict[word][0]
-      phonemes_list += remove_stress(pronunciation) 
-    phonemes_list.append(separator)
-  phonemes_list = phonemes_list[:-1]
-  return phonemes_list
+      pronunciations = lookup_pronunciations(word)
+    syllabified_pronunciations = list(map(syllabify, pronunciations))
+    pronunciations_list.append(syllabified_pronunciations)
 
-def phoneme_list_to_syllable_lines(phoneme_list, src,\
-                          separator='', print_lines=False):
+  return pronunciations_list
+
+def syllabify(pronunciation):
+  syllabified = []
+  for syllable in syllabifyARPA(pronunciation):
+    syllabified.append(syllable.split(' '))
+
+  return syllabified
+
+def get_unknown_word_phonemes(src):
+  with open(src, "r") as phonemes:
+    lines = phonemes.readlines()
+    # list of phonemes
+    unknown_word_phonemes = []
+    for idx, line in enumerate(lines):
+      # remove first word of each line and new line character
+      word_phonemes = line.split(" ", 1)[1][:-1]
+      unknown_word_phonemes.append(word_phonemes.split(" "))
+  return unknown_word_phonemes
+
+def remove_stress(pronunciation):
+  ret = []
+  for arpa in pronunciation:
+    arpa = ''.join([l for l in arpa if not l.isdigit()])
+    ret.append(arpa)
+  return ret
+
+def lookup_pronunciations(word):
+  # Remove stress
+  p_set = set()
+  ps = []
+  for p in CMUDICT[word]:
+    no_stress = remove_stress(p)
+    if tuple(no_stress) not in p_set:
+      ps.append(no_stress)
+    p_set.add(tuple(no_stress))
+
+  return ps
+
+'''
+returns, 'syllable_lines' with syllables, pronunciations, words,
+    lines in the format of the source text
+
+    syllable = [phoneme1, phoneme2, ...]
+    pronunciation = [syllable1, syllable2, ...]
+    word = [pronunciation1, pronunciation2, ...]
+    line = [word1, word2, word3, ...]
+    syllable_lines = [line1, line2, ...]
+'''
+def pronunciations_list_to_syllable_lines(pronunciations_list, src,\
+                          print_lines=True):
   def get_lines(src):
     text = preprocess_text(src)
     return text.splitlines()
 
   def skip_empty(idx):
-    while idx < len(phoneme_list) and phoneme_list[idx] == '':
+    while idx < len(pronunciations_list) and pronunciations_list[idx] == '':
       idx += 1
     return idx
 
-  def syllabifyARPA_to_word_list(syllabifyARPAoutput):
-    new_word = []
-    for syllable in syllabifyARPAoutput:
-      new_word.append(syllable.split(' '))
-    return new_word
+  syllable_lines = []
 
-  lines = get_lines(src)
-  curr_phoneme_idx = 0
-  phoneme_lines = []
+  # Remove new_line character
+  lines = [re.sub('\n', '', line) for line in get_lines(src)]
+  # Turn into 2D array of words
+  lines = [line.split(' ') for line in lines]
+  word_counter = 0
+
   for line in lines:
     if print_lines:
       print(line)
-    processed_line = re.sub("\n", "", line)
-    num_words = -1
 
-    if processed_line == "":
-      num_words = 0
-    else:
-      num_words = len(processed_line.split(' '))
-    phoneme_line = []
-
-    if num_words == 0:
-      phoneme_lines.append(phoneme_line)
+    # If empty line, append empty list
+    if line == ['']:
+      syllable_lines.append([])
       continue
 
-    curr_phoneme_idx = skip_empty(curr_phoneme_idx)
-    curr_phoneme = phoneme_list[curr_phoneme_idx]
+    num_words = len(line)
+
+    # Make syllable_line
+    syllable_line = []
     for _ in range(num_words):
-      curr_phoneme = phoneme_list[curr_phoneme_idx]
-      arpa_arr = []
-      while curr_phoneme != '':
-        arpa_arr.append(curr_phoneme)
-        curr_phoneme_idx += 1
-        if curr_phoneme_idx < len(phoneme_list):
-          curr_phoneme = phoneme_list[curr_phoneme_idx]
-        else:
-          break
-      phoneme_line += syllabifyARPA_to_word_list(syllabifyARPA(arpa_arr))
-      phoneme_line.append(separator)
-      curr_phoneme_idx += 1
-    if len(phoneme_line) != 0:
-      phoneme_line.pop()
+      syllable_line.append(pronunciations_list[word_counter])
+      word_counter += 1
+    syllable_lines.append(syllable_line)
 
     if print_lines:
-      print(phoneme_line)
-    phoneme_lines.append(phoneme_line)
-  return phoneme_lines
+      print(syllable_line)
+
+  return syllable_lines
 '''
 DEPRECATED
 
