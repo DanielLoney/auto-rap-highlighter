@@ -135,7 +135,7 @@ returns, 'syllable_lines' with syllables, pronunciations, words,
     syllable_lines = [line1, line2, ...]
 '''
 def pronunciations_list_to_syllable_lines(pronunciations_list, src,\
-                          print_lines=True):
+                          print_lines=False):
   def get_lines(src):
     text = preprocess_text(src)
     return text.splitlines()

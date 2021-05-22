@@ -63,9 +63,7 @@ pronunciations_list = utils.word_list_to_pronunciations_list(\
 syllable_lines = utils.pronunciations_list_to_syllable_lines(\
         pronunciations_list, args.input_text)
 
-print(syllable_lines)
-
-'''(groups, _) = clustering.cluster(syllable_lines)
+groups = clustering.cluster(syllable_lines, verse_tracking=False)
 with open(args.input_text) as f:
     text = f.readlines()
 # Output
@@ -75,4 +73,4 @@ if args.output_dir_path is not None:
     with open(args.output_dir_path + '/' + base_name + '.html', 'w') as f:
         f.write(html)
 else:
-    print(groups.str_with_text(text))'''
+    print(groups.str_with_text(text))
