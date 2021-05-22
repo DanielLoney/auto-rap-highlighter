@@ -77,6 +77,7 @@ def cluster(syllable_lines, linkage_criterion=10, verse_tracking=False,
 
     def cluster_iteration(first_iter=True):
         nonlocal next_group_id
+        nonlocal live_groups
         # Reset verse_tracking
         if verse_tracking:
             current_verse_starting_line = 0
