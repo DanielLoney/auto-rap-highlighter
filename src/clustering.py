@@ -78,6 +78,10 @@ def cluster(syllable_lines, linkage_criterion=10, verse_tracking=False,
     def cluster_iteration(first_iter=True):
         nonlocal next_group_id
         nonlocal live_groups
+        nonlocal groups
+        nonlocal verse_dict
+        nonlocal current_verse_starting_line
+        nonlocal current_verse_groups
         # Reset verse_tracking
         if verse_tracking:
             current_verse_starting_line = 0
@@ -178,8 +182,8 @@ def cluster(syllable_lines, linkage_criterion=10, verse_tracking=False,
         groups.set_pronunciations(final_pronunciations)
 
     cluster_iteration(first_iter=True)
-    #cluster_iteration(first_iter=False)
-    #cluster_iteration(first_iter=False)
+    cluster_iteration(first_iter=False)
+    cluster_iteration(first_iter=False)
     #cluster_iteration(first_iter=False)
     #cluster_iteration(first_iter=False)
 
