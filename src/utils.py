@@ -89,9 +89,11 @@ def word_list_to_pronunciations_list(unknown_src, word_list,\
 
 def syllabify(pronunciation):
   syllabified = []
-  for syllable in syllabifyARPA(pronunciation):
-    syllabified.append(syllable.split(' '))
-
+  try:
+    for syllable in syllabifyARPA(pronunciation):
+      syllabified.append(syllable.split(' '))
+  except ValueError:
+    syllabified.append(pronunciation)
   return syllabified
 
 def get_unknown_word_phonemes(src):
@@ -150,7 +152,7 @@ def pronunciations_list_to_syllable_lines(pronunciations_list, src,\
   # Remove new_line character
   lines = [re.sub('\n', '', line) for line in get_lines(src)]
   # Turn into 2D array of words
-  lines = [line.split(' ') for line in lines]
+  lines = [line.split() for line in lines]
   word_counter = 0
 
   for line in lines:
@@ -167,7 +169,9 @@ def pronunciations_list_to_syllable_lines(pronunciations_list, src,\
     # Make syllable_line
     syllable_line = []
     for _ in range(num_words):
-      syllable_line.append(pronunciations_list[word_counter])
+      word = pronunciations_list[word_counter]
+      #print("Adding word {}".format(word))
+      syllable_line.append(word)
       word_counter += 1
     syllable_lines.append(syllable_line)
 

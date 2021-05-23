@@ -9,9 +9,13 @@ UNMATCHED = '-'
 def syllable_list_to_no_onset_ipa(syllable):
     def remove_onset(syllable):
         first_vowel_index = 0
-        while syllable[first_vowel_index] in aline.consonants:
+        while first_vowel_index < len(syllable) and\
+                syllable[first_vowel_index] in aline.consonants:
             first_vowel_index += 1
-        return syllable[first_vowel_index:]
+        if first_vowel_index == len(syllable):
+            return syllable
+        else:
+            return syllable[first_vowel_index:]
 
     ipa = ''.join(arpa2aline.arpa2aline(syllable))
     return remove_onset(ipa)

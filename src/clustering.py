@@ -24,7 +24,7 @@ Clusters the syllable lines into groups.
 Turn on verse_tracking for easier debugging.
 '''
 def cluster(syllable_lines, linkage_criterion=10, verse_tracking=False,
-        max_live_lines=1, num_iterations=1):
+        max_live_lines=1, num_iterations=2):
 
     # group id to group
     next_group_id = 0
