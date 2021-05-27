@@ -54,8 +54,10 @@ def distance(syllable1, syllable2, extraneous_coda_penalty = 4.9, \
                     alignment_distance_component += \
                             unmatched_phoneme_penalty
                 else:
-                    weight = consonant_delta_weight if p1 in\
-                            aline.consonants else vowel_delta_weight
+                    weight = consonant_delta_weight if \
+                            (p1 in aline.consonants or\
+                            p2 in aline.consonants) else\
+                            vowel_delta_weight
                     distance_component = weight * aline.delta(p1, p2)
                     alignment_distance_component += distance_component
         alignment_distance_component /= (len(a1) * len(a2))
