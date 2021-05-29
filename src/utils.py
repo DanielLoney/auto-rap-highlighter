@@ -12,6 +12,9 @@ except LookupError:
   nltk.download('cmudict')
   CMUDICT = nltk.corpus.cmudict.dict()
 
+CMUDICT['em'] = [['EH', 'M'], ['AH', 'M']]
+CMUDICT['lemme'] = [['L', 'EH', 'M', 'IY']]
+
 def preprocess_text(src, ignored_reg_ex="[\[].*?[\]]|[^a-zA-Z0-9-' \n]"):
   file = open(src, 'rt')
   text = file.read()
