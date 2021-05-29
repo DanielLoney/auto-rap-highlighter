@@ -23,8 +23,8 @@ MAX_ONSET_CONSONANTS = 3
 Clusters the syllable lines into groups.
 Turn on verse_tracking for easier debugging.
 '''
-def cluster(syllable_lines, linkage_criterion=10, verse_tracking=False,
-        max_live_lines=1, num_iterations=2):
+def cluster(syllable_lines, ignore_set, linkage_criterion=10,\
+        verse_tracking=False, max_live_lines=1, num_iterations=2):
 
     # group id to group
     next_group_id = 0
@@ -124,6 +124,10 @@ def cluster(syllable_lines, linkage_criterion=10, verse_tracking=False,
                         max_live_lines)
 
             for word_i, word in enumerate(line):
+                if (line_number, word_i) in ignore_set:
+                    if first_iter:
+                        final_pronunciations[line_number].append(0)
+                    continue
                 if not first_iter:
                     # Remove all syllables from groups and remove the group
                     # id associated with it if it was the only syllable left

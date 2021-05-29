@@ -60,10 +60,10 @@ unknown_phoneme_path = get_unknown_phoneme_path(args.phoneme_list)
 pronunciations_list = utils.word_list_to_pronunciations_list(\
         unknown_phoneme_path, word_list, filler)
 #print("Phoneme List is " + str(phoneme_list))
-syllable_lines = utils.pronunciations_list_to_syllable_lines(\
+(syllable_lines, ignore_set) = utils.pronunciations_list_to_syllable_lines(\
         pronunciations_list, args.input_text)
 
-groups = clustering.cluster(syllable_lines, verse_tracking=False)
+groups = clustering.cluster(syllable_lines, ignore_set, verse_tracking=False)
 with open(args.input_text) as f:
     text = f.readlines()
 # Output

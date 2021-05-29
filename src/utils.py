@@ -4,6 +4,7 @@ import pandas as pd
 from syllabifier import syllabifyARPA
 import num2words
 
+IGNORE_WORDS = set(['a', 'an', 'the', 'of', 'is,'])
 
 try:
   CMUDICT = nltk.corpus.cmudict.dict()
@@ -148,6 +149,8 @@ def pronunciations_list_to_syllable_lines(pronunciations_list, src,\
     return idx
 
   syllable_lines = []
+  # Set of words to ignore by (line index, word index)
+  ignore_set = set()
 
   # Remove new_line character
   lines = [re.sub('\n', '', line) for line in get_lines(src)]
@@ -155,7 +158,7 @@ def pronunciations_list_to_syllable_lines(pronunciations_list, src,\
   lines = [line.split() for line in lines]
   word_counter = 0
 
-  for line in lines:
+  for l_i, line in enumerate(lines):
     if print_lines:
       print(line)
 
@@ -168,17 +171,19 @@ def pronunciations_list_to_syllable_lines(pronunciations_list, src,\
 
     # Make syllable_line
     syllable_line = []
-    for _ in range(num_words):
+    for w_i, w in enumerate(line):
       word = pronunciations_list[word_counter]
-      #print("Adding word {}".format(word))
       syllable_line.append(word)
       word_counter += 1
+
+      if w.lower() in IGNORE_WORDS:
+          ignore_set.add((l_i, w_i))
     syllable_lines.append(syllable_line)
 
     if print_lines:
       print(syllable_line)
 
-  return syllable_lines
+  return (syllable_lines, ignore_set)
 '''
 DEPRECATED
 
