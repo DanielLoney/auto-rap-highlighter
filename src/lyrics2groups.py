@@ -57,13 +57,13 @@ def get_unknown_phoneme_path(directory):
     return path
 unknown_phoneme_path = get_unknown_phoneme_path(args.phoneme_list)
 #print("Unknown path is " + str(unknown_phoneme_path))
-phoneme_list = utils.phonemes_to_list(unknown_phoneme_path, word_list,\
-        filler, separator)
+pronunciations_list = utils.word_list_to_pronunciations_list(\
+        unknown_phoneme_path, word_list, filler)
 #print("Phoneme List is " + str(phoneme_list))
-syllable_lines = utils.phoneme_list_to_syllable_lines(phoneme_list,\
-        args.input_text, separator=separator)
+syllable_lines = utils.pronunciations_list_to_syllable_lines(\
+        pronunciations_list, args.input_text)
 
-(groups, _) = clustering.cluster(syllable_lines)
+groups = clustering.cluster(syllable_lines, verse_tracking=False)
 with open(args.input_text) as f:
     text = f.readlines()
 # Output

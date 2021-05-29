@@ -19,63 +19,119 @@ class Groups:
         self.id_to_group = dict()
         self.index_to_group = dict()
 
-    def add_syllable(self, group_id, line_index, syllable_index):
+    def add_syllable(self, group_id, index):
         assert group_id in self.id_to_group
-        assert len(self.syllable_lines[line_index][syllable_index]) != 0
-        self.id_to_group[group_id].add((line_index, syllable_index))
-        self.index_to_group[(line_index, syllable_index)] = group_id
+        assert index not in self.index_to_group
+        self.id_to_group[group_id].add(index)
+        self.index_to_group[index] = group_id
+
+    def remove_syllable(self, index):
+        assert index in self.index_to_group
+        group_id = self.index_to_group[index]
+        del self.index_to_group[index]
+        self.id_to_group[group_id].remove(index)
+        if len(self.id_to_group[group_id]) == 0:
+            del self.id_to_group[group_id]
 
     def add_group(self, group_id, group):
         self.id_to_group[group_id] = set(group)
-        for (line_index, syllable_index) in group:
-            self.index_to_group[(line_index, syllable_index)] = group_id
+        for index in group:
+            self.index_to_group[index] = group_id
 
     def get_group(self, group_id):
         l = []
-        for (line_index, syllable_index) in self.id_to_group[group_id]:
-            syllable = self.syllable_lines[line_index][syllable_index]
+        for index in self.id_to_group[group_id]:
+            syllable = self.get_syllable(index)
             l.append(syllable)
         return l
 
-    def index_to_group(self, line_index, syllable_index):
-        group_id = self.index_to_group[(line_index, syllable_index)]
+    def get_groups_in_range(self, curr_line_i, line_radius):
+        groups_in_range = set()
+        ranges = []
+        ranges.append(range(curr_line_i, curr_line_i + line_radius + 1))
+        ranges.append(\
+                range(curr_line_i - 1, curr_line_i - line_radius - 1, -1))
+
+        actual_range = []
+        for r in ranges:
+            for l_i in r:
+                if not (0 <= l_i and l_i < len(self.syllable_lines)):
+                    break
+                # Elif end of verse
+                elif len(self.syllable_lines[l_i]) == 0:
+                    break
+                else:
+                    actual_range.append(l_i)
+
+        for l_i in actual_range:
+            if not (0 <= l_i and l_i < len(self.syllable_lines)):
+                break
+            # Elif end of verse
+            elif len(self.syllable_lines[l_i]) == 0:
+                break
+            for w_i, word in enumerate(self.syllable_lines[l_i]):
+                for p_i, pronun in enumerate(word):
+                    for s_i in range(len(pronun)):
+                        index = (l_i, w_i, p_i, s_i)
+                        if index in self.index_to_group:
+                            groups_in_range.add(\
+                                    self.index_to_group[index])
+        return groups_in_range
+
+    def get_syllable(self, index):
+        value = self.syllable_lines
+        for i in index:
+            value = value[i]
+        return value
+
+    def index_to_group(self, index):
+        group_id = self.index_to_group[index]
         assert group_id is not None
         return group_id
 
+    def set_pronunciations(self, final_pronunciations):
+        assert len(final_pronunciations) == len(self.syllable_lines)
+        self.pronunciations = final_pronunciations
+
     def to_text_lines(self, separator=''):
+        assert self.pronunciations != None
         # Assign a color to each group
         group_id_to_color = {}
         colors = cycle(backgrounds)
-        for _id in range(len(self.id_to_group)):
-            if len(self.id_to_group[_id]) < 2:
-                group_id_to_color[_id] = white_background
-            else:
-                group_id_to_color[_id] = next(colors)
 
         str_lines = []
         for line_number, line in enumerate(self.syllable_lines):
             line_string = ''
-            for syl_i, syllable in enumerate(line):
-                # If empty space, append space to line
-                if syllable == separator:
-                    syl_string = '  '
-                    line_string += syl_string
-                # If syllable
-                else:
+            for w_i, word in enumerate(line):
+                p_i = self.pronunciations[line_number][w_i]
+                pronun = self.syllable_lines[line_number][w_i][p_i]
+                for syl_i, syllable in enumerate(pronun):
                     syl_string = ''
+                    # Add dashes between phonemes
                     syl_string = syl_string + '-'.join(syllable)
-                    #print("Checking syllable: {}".format(syllable))
-                    #print("Adding syl string {}".format(syl_string))
                     # If in group, give it a color
-                    if (line_number, syl_i) in self.index_to_group:
-                        group_id = self.index_to_group[(line_number, syl_i)]
+                    index = (line_number, w_i, p_i, syl_i)
+                    if index in self.index_to_group:
+                        group_id = self.index_to_group[index]
+                        if group_id not in group_id_to_color:
+                            if len(self.id_to_group[group_id]) < 2:
+                                group_id_to_color[group_id] =\
+                                        white_background
+                            else:
+                                group_id_to_color[group_id] =\
+                                        next(colors)
                         color = group_id_to_color[group_id]
                         syl_string = color + syl_string +\
                             white_background + black_text
-                    # If syllable is a part of a multi-syllable word
-                    if syl_i > 0 and line[syl_i - 1] != separator:
-                        syl_string = white_background + '-' + syl_string
+                    # If there are more syllables to the pronunciation,
+                    #   add another dash afterwards
+                    if syl_i + 1 < len(pronun):
+                        syl_string += white_background + '-'
                     line_string += syl_string
+
+                # If word isn't the last word, add a space
+                if w_i + 1 < len(line):
+                    line_string += '  '
             str_lines.append(line_string)
 
         return str_lines
