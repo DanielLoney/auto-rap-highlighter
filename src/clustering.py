@@ -51,6 +51,8 @@ def cluster(syllable_lines, linkage_criterion=10, verse_tracking=False,
     def get_best_pronunciation(word):
         best_p_i = 0
         best_linkage = float('inf')
+        if len(word) == 1:
+            return 0
         for (p_i, pronun) in enumerate(word):
             avg_linkage = 0
             for syllable in pronun:
@@ -157,7 +159,6 @@ def cluster(syllable_lines, linkage_criterion=10, verse_tracking=False,
                         # Update groups
                         groups.add_syllable(best_group_id, (line_number,\
                                 word_i, p_i, syllable_i))
-                        updated_group = groups.get_group(best_group_id)
                         if first_iter:
                             # Update live_groups
                             live_groups[best_group_id] = {\
