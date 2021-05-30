@@ -24,7 +24,7 @@ Clusters the syllable lines into groups.
 Turn on verse_tracking for easier debugging.
 '''
 def cluster(syllable_lines, ignore_set, linkage_criterion=10,\
-        verse_tracking=False, max_live_lines=1, num_iterations=2):
+        verse_tracking=False, max_live_lines=1, num_iterations=10):
 
     # group id to group
     next_group_id = 0
@@ -186,8 +186,10 @@ def cluster(syllable_lines, ignore_set, linkage_criterion=10,\
                         next_group_id += 1
         groups.set_pronunciations(final_pronunciations)
 
+    print("Iteration 1 of {}...".format(num_iterations + 1))
     cluster_iteration(first_iter=True)
-    for _ in range(num_iterations):
+    for i in range(num_iterations):
+        print("Iteration {} of {}...".format(i+2, num_iterations + 1))
         cluster_iteration(first_iter=False)
 
     if verse_tracking:

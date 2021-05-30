@@ -63,6 +63,7 @@ pronunciations_list = utils.word_list_to_pronunciations_list(\
 (syllable_lines, ignore_set) = utils.pronunciations_list_to_syllable_lines(\
         pronunciations_list, args.input_text)
 
+print("Clustering...")
 groups = clustering.cluster(syllable_lines, ignore_set, verse_tracking=False)
 with open(args.input_text) as f:
     text = f.readlines()
