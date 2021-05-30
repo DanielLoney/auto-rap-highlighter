@@ -21,7 +21,12 @@ unknown_list_default = 'unknown_lists'
 parser.add_argument("-w", "--unknown_list_dir", default=unknown_list_default,
         help='unknown_list_dir directory path where <name>_unknown_list.txt\
                 files go')
+parser.add_argument("-i", "--num_iterations", default=5, type=int,
+        help='unknown_list_dir directory path where <name>_unknown_list.txt\
+                files go')
 args = parser.parse_args()
+
+assert args.num_iterations > 0
 
 if (args.phoneme_list == phoneme_list_default and\
         not os.path.exists('./' + phoneme_list_default)):
@@ -64,7 +69,8 @@ pronunciations_list = utils.word_list_to_pronunciations_list(\
         pronunciations_list, args.input_text)
 
 print("Clustering...")
-groups = clustering.cluster(syllable_lines, ignore_set, verse_tracking=False)
+groups = clustering.cluster(syllable_lines, ignore_set, verse_tracking=False,\
+        num_iterations=args.num_iterations)
 with open(args.input_text) as f:
     text = f.readlines()
 # Output
