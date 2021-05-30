@@ -197,6 +197,3 @@ class clustering_tests(unittest.TestCase):
         #    {}".format(best_num_cs))
         self.assertTrue(best_num_cs == (1, d, -3))
 
-    def test_clustering(self):
-        (groups, verse_dict) = clustering.cluster(figaro_syllable_lines)
-        print(groups.str_with_text(figaro_text))
