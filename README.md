@@ -70,13 +70,6 @@ From the source directory, run:
 .../src$ python3 -m unittest tests.tests
 ```
 
-## Creating Phoneme Co-occurrence Matrices from text
-Run the scripts/create_comatrix.py file from the python env.
-For example:
-```
-$ pipenv shell
-$ python3 scripts/create_comatrix.py temp/text cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress temp/comatrices -n temp/phoneme_list -w temp/word_list
-```
 ### Instructions for scripts/create_comatrix.py
 ```
 usage: create_comatrix.py [-h] [-n PHONEME_LIST] [-w WORD_LIST]
@@ -112,4 +105,3 @@ optional arguments:
 - https://github.com/cmusphinx/g2p-seq2seq
   - README instructions inspired from this too 
 - cmusphinx/g2p-seq2seq pretrained dictionary from sourceforge
-- 
