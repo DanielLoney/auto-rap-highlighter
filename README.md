@@ -105,3 +105,5 @@ optional arguments:
 - https://github.com/cmusphinx/g2p-seq2seq
   - README instructions inspired from this too 
 - cmusphinx/g2p-seq2seq pretrained dictionary from sourceforge
+- https://github.com/nltk/nltk
+- https://github.com/vgautam/arpabet-syllabifier
