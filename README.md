@@ -64,43 +64,40 @@ $ pipenv shell
 $ python3 src/lyrics2groups.py temp/text/figaro.txt cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress
 ```
 
+## Instructions for scripts/create_comatrix.py
+```
+usage: lyrics2groups.py [-h] [-o OUTPUT_DIR_PATH] [-n PHONEME_LIST]
+                        [-w UNKNOWN_LIST_DIR] [-i NUM_ITERATIONS]
+                        input_text phones_path model_dir_path
+
+positional arguments:
+  input_text            input directory path with .txt files of
+                        lyrics/literature
+  phones_path           .phones file path with format the same as
+                        cmudict.phones
+  model_dir_path        g2p model directory path
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT_DIR_PATH, --output_dir_path OUTPUT_DIR_PATH
+                        output directory path with for <name>.html file
+  -n PHONEME_LIST, --phoneme_list PHONEME_LIST
+                        phoneme_list directory path where
+                        <name>_phoneme_list.txt files go
+  -w UNKNOWN_LIST_DIR, --unknown_list_dir UNKNOWN_LIST_DIR
+                        unknown_list_dir directory path where
+                        <name>_unknown_list.txt files go
+  -i NUM_ITERATIONS, --num_iterations NUM_ITERATIONS
+                        unknown_list_dir directory path where
+                        <name>_unknown_list.txt files go
+```
+
 ## Running tests
 From the source directory, run:
 ```
 .../src$ python3 -m unittest tests.tests
 ```
 
-### Instructions for scripts/create_comatrix.py
-```
-usage: create_comatrix.py [-h] [-n PHONEME_LIST] [-w WORD_LIST]
-                          [-r WORD_RADIUS] [-s SEPARATOR]
-                          input_dir_path phones_path model_dir_path
-                          output_dir_path
-
-positional arguments:
-  input_dir_path        input directory path with .txt files of
-                        lyrics/literature
-  phones_path           .phones file path with format the same as
-                        cmudict.phones
-  model_dir_path        g2p model directory path
-  output_dir_path       output directory path with for <name>_comatrix.csv
-                        files
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -n PHONEME_LIST, --phoneme_list PHONEME_LIST
-                        phoneme_list directory path where
-                        <name>_phoneme_list.txt files go
-  -w WORD_LIST, --word_list WORD_LIST
-                        word_lists directory path where <name>_word_list.txt
-                        files go
-  -r WORD_RADIUS, --word_radius WORD_RADIUS
-                        radius around which phonemes are considered to be
-                        coocurring, note: converted to phoneme radius by word
-                        radius * 6
-  -s SEPARATOR, --separator SEPARATOR
-                        separator string for word_list
-```
 ## Sources
 - https://github.com/cmusphinx/g2p-seq2seq
   - README instructions inspired from this too 
