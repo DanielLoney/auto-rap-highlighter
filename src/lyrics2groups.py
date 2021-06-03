@@ -34,6 +34,10 @@ args = parser.parse_args()
 
 assert args.num_iterations > 0
 
+if args.evaluate:
+    assert args.input_text == "src/eval_group/figaro.txt", "Evaluation only"+\
+        "works with src/eval_group/figaro.txt as the input text"
+
 if (args.phoneme_list == phoneme_list_default and\
         not os.path.exists('./' + phoneme_list_default)):
   os.mkdir('./' + phoneme_list_default)
