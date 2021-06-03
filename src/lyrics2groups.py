@@ -1,5 +1,6 @@
 import argparse, os, glob
 import utils, clustering
+from eval_group import evaluate_groups
 from ansi2html import Ansi2HTMLConverter
 
 parser = argparse.ArgumentParser()
@@ -27,6 +28,8 @@ parser.add_argument("-i", "--num_iterations", default=5, type=int,
 parser.add_argument("-a", "--addresses_on", action='store_true',\
         default=False, \
         help='view the output with the addresses of each syllable')
+parser.add_argument("-e", "--evaluate", action='store_true',\
+        help='Return evaluation metrics for figaro')
 args = parser.parse_args()
 
 assert args.num_iterations > 0
@@ -84,3 +87,6 @@ if args.output_dir_path is not None:
         f.write(html)
 else:
     print(groups.str_with_text(text, addresses=args.addresses_on))
+
+if args.evaluate:
+    evaluate_groups.evaluate_groups(groups)
