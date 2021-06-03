@@ -93,7 +93,7 @@ class Groups:
         assert len(final_pronunciations) == len(self.syllable_lines)
         self.pronunciations = final_pronunciations
 
-    def to_text_lines(self, separator=''):
+    def to_text_lines(self, separator='', addresses=False):
         assert self.pronunciations != None
         # Assign a color to each group
         group_id_to_color = {}
@@ -109,6 +109,8 @@ class Groups:
                     syl_string = ''
                     # Add dashes between phonemes
                     syl_string = syl_string + '-'.join(syllable)
+                    if addresses:
+                        syl_string += str((line_number, w_i, syl_i))
                     # If in group, give it a color
                     index = (line_number, w_i, p_i, syl_i)
                     if index in self.index_to_group:
@@ -140,10 +142,10 @@ class Groups:
         return black_text + white_background +\
                 '\n'.join(self.to_text_lines()) + reset
 
-    def str_with_text(self, text):
+    def str_with_text(self, text, addresses=False):
         s = ''
         s += black_text + white_background
-        syllable_color_lines = self.to_text_lines()
+        syllable_color_lines = self.to_text_lines(addresses=addresses)
         for line_i, line in enumerate(text):
             s += line
             s += syllable_color_lines[line_i]

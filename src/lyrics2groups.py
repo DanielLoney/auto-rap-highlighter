@@ -24,6 +24,9 @@ parser.add_argument("-w", "--unknown_list_dir", default=unknown_list_default,
 parser.add_argument("-i", "--num_iterations", default=5, type=int,
         help='unknown_list_dir directory path where <name>_unknown_list.txt\
                 files go')
+parser.add_argument("-a", "--addresses_on", action='store_true',\
+        default=False, \
+        help='view the output with the addresses of each syllable')
 args = parser.parse_args()
 
 assert args.num_iterations > 0
@@ -80,4 +83,4 @@ if args.output_dir_path is not None:
     with open(args.output_dir_path + '/' + base_name + '.html', 'w') as f:
         f.write(html)
 else:
-    print(groups.str_with_text(text))
+    print(groups.str_with_text(text, addresses=args.addresses_on))
