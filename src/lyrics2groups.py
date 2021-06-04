@@ -29,7 +29,9 @@ parser.add_argument("-a", "--addresses_on", action='store_true',\
         default=False, \
         help='view the output with the addresses of each syllable')
 parser.add_argument("-e", "--evaluate", action='store_true',\
-        help='Return evaluation metrics for figaro')
+        help='Return evaluation metrics for figaro, automatically replaces' +
+        'input_text with "src/eval_group/figaro.txt" although positional'+
+        'argument still required')
 args = parser.parse_args()
 
 assert args.num_iterations > 0
