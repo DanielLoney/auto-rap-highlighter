@@ -64,7 +64,7 @@ $ pipenv shell
 $ python3 src/lyrics2groups.py temp/text/figaro.txt cmudict/cmudict.phones models/g2p-seq2seq-model-6.2-cmudict-nostress
 ```
 
-## Instructions for scripts/create_comatrix.py
+## Instructions for src/lyrics2groups.py
 ```
 usage: lyrics2groups.py [-h] [-o OUTPUT_DIR_PATH] [-n PHONEME_LIST]
                         [-w UNKNOWN_LIST_DIR] [-i NUM_ITERATIONS]
@@ -90,6 +90,11 @@ optional arguments:
   -i NUM_ITERATIONS, --num_iterations NUM_ITERATIONS
                         unknown_list_dir directory path where
                         <name>_unknown_list.txt files go
+  -a, --addresses_on    view the output with the addresses of each syllable
+  -e, --evaluate        Return evaluation metrics for figaro, automatically
+                        replacesinput_text with "src/eval_group/figaro.txt"
+                        although positionalargument still required
+
 ```
 
 ## Running tests
