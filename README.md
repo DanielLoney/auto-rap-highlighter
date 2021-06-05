@@ -1,4 +1,4 @@
-# Rap Rhyme Detection Project
+# Algorithmic Detecting Rhymes in Rap and Highlighting
 
 ## Setting up the virtual environment and dependencies
 
