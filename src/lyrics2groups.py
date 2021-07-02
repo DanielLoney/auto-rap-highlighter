@@ -67,7 +67,7 @@ word_list = utils.text_to_word_list(args.input_text,\
 utils.words_to_phonemes(args.unknown_list_dir, args.phoneme_list,\
         args.model_dir_path)
 def get_unknown_phoneme_path(directory):
-    if (len(os.listdir(directory)) != 1):
+    if (len(os.listdir(directory)) > 1):
       raise Exception("Expected only 1 unknown list in " + directory +\
               "Found {}".format(os.listdir(directory)))
     path = directory + '/' + os.listdir(directory)[0]
