@@ -5,13 +5,13 @@ black_text = "\u001b[30m"
 white_background = "\u001b[47m"
 black_background = "\u001b[40m"
 # Backgrounds:
-backgrounds = [red, green, blue, magenta, cyan, yellow, bright_black,\
-        bright_cyan, bright_magenta, bright_blue, bright_yellow,\
-        bright_green, bright_red] =\
-    ['\033[37;41m', '\u001b[37;42m', '\u001b[37;44m',\
-    '\u001b[37;45m', '\u001b[37;46m', '\u001b[43m', '\u001b[37;100m',\
-    '\u001b[30;106m', '\u001b[30;105m', '\u001b[37;104m',
-    '\u001b[30;103m', '\u001b[30;102m', '\u001b[30;101m']
+backgrounds = [red, green, blue, magenta, cyan, yellow, bright_black,
+               bright_cyan, bright_magenta, bright_blue, bright_yellow,
+               bright_green, bright_red] =\
+    ['\033[37;41m', '\u001b[37;42m', '\u001b[37;44m',
+     '\u001b[37;45m', '\u001b[37;46m', '\u001b[43m', '\u001b[37;100m',
+     '\u001b[30;106m', '\u001b[30;105m', '\u001b[37;104m',
+     '\u001b[30;103m', '\u001b[30;102m', '\u001b[30;101m']
 
 class Groups:
     def __init__(self, syllable_lines):
@@ -49,7 +49,7 @@ class Groups:
         groups_in_range = set()
         ranges = []
         ranges.append(range(curr_line_i, curr_line_i + line_radius + 1))
-        ranges.append(\
+        ranges.append(
                 range(curr_line_i - 1, curr_line_i - line_radius - 1, -1))
 
         actual_range = []
@@ -74,7 +74,7 @@ class Groups:
                     for s_i in range(len(pronun)):
                         index = (l_i, w_i, p_i, s_i)
                         if index in self.index_to_group:
-                            groups_in_range.add(\
+                            groups_in_range.add(
                                     self.index_to_group[index])
         return groups_in_range
 
