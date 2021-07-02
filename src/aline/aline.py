@@ -47,8 +47,10 @@ University of Toronto.
 
 try:
     import numpy as np
+    from memoization import cached
 except ImportError:
     np = None
+    cached = None
 
 # === Constants ===
 
@@ -1126,6 +1128,7 @@ feature_matrix = {
 # === Algorithm ===
 
 
+@cached
 def align(str1, str2, epsilon=0):
     """
     Compute the alignment of two phonetic strings.
@@ -1177,6 +1180,7 @@ def align(str1, str2, epsilon=0):
     return alignments
 
 
+@cached
 def _retrieve(i, j, s, S, T, str1, str2, out):
     """
     Retrieve the path through the similarity matrix S starting at (i, j).
@@ -1234,6 +1238,7 @@ def _retrieve(i, j, s, S, T, str1, str2, out):
     return out
 
 
+@cached
 def sigma_skip(p):
     """
     Returns score of an indel of P.
@@ -1243,6 +1248,7 @@ def sigma_skip(p):
     return C_skip
 
 
+@cached
 def sigma_sub(p, q):
     """
     Returns score of a substitution of P with Q.
@@ -1252,6 +1258,7 @@ def sigma_sub(p, q):
     return C_sub - delta(p, q) - V(p) - V(q)
 
 
+@cached
 def sigma_exp(p, q):
     """
     Returns score of an expansion/compression.
@@ -1263,6 +1270,7 @@ def sigma_exp(p, q):
     return C_exp - delta(p, q1) - delta(p, q2) - V(p) - max(V(q1), V(q2))
 
 
+@cached
 def delta(p, q):
     """
     Return weighted sum of difference between P and Q.
@@ -1276,6 +1284,7 @@ def delta(p, q):
     return total
 
 
+@cached
 def diff(p, q, f):
     """
     Returns difference between phonetic segments P and Q for feature F.
@@ -1286,6 +1295,7 @@ def diff(p, q, f):
     return abs(similarity_matrix[p_features[f]] - similarity_matrix[q_features[f]])
 
 
+@cached
 def R(p, q):
     """
     Return relevant features for segment comparsion.
@@ -1297,6 +1307,7 @@ def R(p, q):
     return R_v
 
 
+@cached
 def V(p):
     """
     Return vowel weight if P is vowel.
