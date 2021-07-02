@@ -12,6 +12,7 @@ pandas = "*"
 nltk = "*"
 num2words = "*"
 ansi2html = "*"
+memoization = "*"
 
 [dev-packages]
 
