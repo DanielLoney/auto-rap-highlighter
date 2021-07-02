@@ -84,5 +84,5 @@ def group_average_linkage(group1, group2, distance=distance):
     assert type(group1) == list and type(group2) == list
     for s1 in group1:
         for s2 in group2:
-            _sum += distance(s1, s2)
+            _sum += distance(tuple(s1), tuple(s2))
     return _sum / (len(group1) * len(group2))
