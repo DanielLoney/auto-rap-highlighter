@@ -1238,7 +1238,6 @@ def _retrieve(i, j, s, S, T, str1, str2, out):
     return out
 
 
-@cached
 def sigma_skip(p):
     """
     Returns score of an indel of P.
@@ -1295,7 +1294,6 @@ def diff(p, q, f):
     return abs(similarity_matrix[p_features[f]] - similarity_matrix[q_features[f]])
 
 
-@cached
 def R(p, q):
     """
     Return relevant features for segment comparsion.
@@ -1307,7 +1305,6 @@ def R(p, q):
     return R_v
 
 
-@cached
 def V(p):
     """
     Return vowel weight if P is vowel.
