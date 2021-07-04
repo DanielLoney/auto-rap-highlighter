@@ -19,10 +19,6 @@ returns:
 MAX_CODA_CONSONANTS = 5
 MAX_ONSET_CONSONANTS = 3
 
-"""
-Clusters the syllable lines into groups.
-Turn on verse_tracking for easier debugging.
-"""
 
 
 def cluster(
@@ -33,6 +29,10 @@ def cluster(
     max_live_lines=1,
     num_iterations=5,
 ):
+    """
+    Clusters the syllable lines into groups.
+    Turn on verse_tracking for easier debugging.
+    """
 
     assert num_iterations > 0
     num_iterations -= 1
@@ -50,11 +50,9 @@ def cluster(
     live_groups = dict()  # live_groups[_id] = {'group': set(syllables),
     #       'most_recent_line': int}
 
-    """
-    final_pronunciations: Gives pronunciation used for each word
-    line = [pronunciation_index_1, pronunciation_index_2, ...]
-    final_pronunciations = [line1, line2, ...]
-    """
+    # final_pronunciations: Gives pronunciation used for each word
+    # line = [pronunciation_index_1, pronunciation_index_2, ...]
+    # final_pronunciations = [line1, line2, ...]
     final_pronunciations = []
 
     # Given a list of pronunciations and the current live groups, give the
@@ -81,14 +79,12 @@ def cluster(
                 best_linkage = avg_linkage
         return best_p_i
 
-    """
-    First iteration: Only checks preceding groups
-    Second iteration:
-        For each syllable
-            Remove it from its group
-            Redetermine best_group_id using groups set from previous
-            iteration
-    """
+    # First iteration: Only checks preceding groups
+    # Second iteration:
+    #     For each syllable
+    #         Remove it from its group
+    #         Redetermine best_group_id using groups set from previous
+    #         iteration
 
     def cluster_iteration(first_iter=True):
         nonlocal next_group_id
@@ -183,8 +179,6 @@ def cluster(
                                 "most_recent_line": line_number
                             }
                     else:
-                        # Add the syllable as its own new group
-                        new_group = [syllable]
                         # print("Adding new group: {}".format(new_group))
                         # Update groups
                         groups.add_group(
@@ -211,12 +205,13 @@ def cluster(
 
     if verse_tracking:
         return (groups, verse_dict)
-    else:
-        return groups
+    return groups
 
 
-# Returns [(group_id, linkage_distance)] sorted by linkage_distance
 def get_sorted_linkages(groups, syllable, live_groups):
+    '''
+    Returns [(group_id, linkage_distance)] sorted by linkage_distance
+    '''
     live_group_linkages = [
         (_id, linkage.group_average_linkage(groups.get_group(_id), [tuple(syllable)]))
         for _id in live_groups
@@ -228,8 +223,7 @@ def get_sorted_linkages(groups, syllable, live_groups):
 def get_best_group_id_linkage_distance(sorted_linkages):
     if len(sorted_linkages) == 0:
         return (-1, float("inf"))
-    else:
-        return sorted_linkages[0]
+    return sorted_linkages[0]
 
 
 def still_live(live_groups, line_number, max_live_lines, _id):
@@ -245,5 +239,5 @@ def get_num_coda_consonants(syllable):
             num_coda_cs += 1
         else:
             break
-    assert num_coda_cs >= 0 and num_coda_cs <= MAX_CODA_CONSONANTS
+    assert 0 <= num_coda_cs <= MAX_CODA_CONSONANTS
     return num_coda_cs
