@@ -42,21 +42,15 @@ def syllable_list_to_no_onset_ipa(syllable):
     return remove_onset(ipa)
 
 
-"""Returns a list of tuples for the alignment of list of phonemes, phonemes1
-        and list of phonemes, phonemes2"""
-
-
 def align(phonemes1, phonemes2, already_ipa=False):
-    # Convert input into strings of IPA phonemes
+    """Returns a list of tuples for the alignment of list of phonemes,
+    phonemes1 and list of phonemes, phonemes2"""
+
     if not already_ipa:
         phonemes1 = "".join(arpa2aline.arpa2aline(phonemes1))
         phonemes2 = "".join(arpa2aline.arpa2aline(phonemes2))
 
     return aline.align(phonemes1, phonemes2)[0]
-
-
-"""Returns an decimal distance between list of phonemes, syllable1 and
-   list of phonemes, syllable2"""
 
 
 @cached
@@ -69,6 +63,8 @@ def distance(
     unmatched_phoneme_penalty=4.9,
     debug_printing=False,
 ):
+    """Returns an decimal distance between list of phonemes, syllable1 and
+    list of phonemes, syllable2"""
 
     if debug_printing:
         print("Syllables are: {} and {}".format(syllable1, syllable2))
@@ -78,30 +74,30 @@ def distance(
     alignment = align(ipas1, ipas2, already_ipa=True)
     if debug_printing:
         print("Alignments are: {}".format(alignment))
-    distance = 0
+    dist = 0
     # Sum the deltas for each aligned phoneme
-    for (a1, a2) in alignment:
+    for (a_1, a_2) in alignment:
         alignment_distance_component = 0
-        for p1 in a1:
-            for p2 in a2:
-                if p1 == UNMATCHED or p2 == UNMATCHED:
+        for p_1 in a_1:
+            for p_2 in a_2:
+                if UNMATCHED in (p_1, p_2):
                     alignment_distance_component += unmatched_phoneme_penalty
                 else:
                     weight = (
                         consonant_delta_weight
-                        if (p1 in aline.consonants or p2 in aline.consonants)
+                        if (p_1 in aline.consonants or p_2 in aline.consonants)
                         else vowel_delta_weight
                     )
-                    distance_component = weight * aline.delta(p1, p2)
+                    distance_component = weight * aline.delta(p_1, p_2)
                     alignment_distance_component += distance_component
-        alignment_distance_component /= len(a1) * len(a2)
-        distance += alignment_distance_component
+        alignment_distance_component /= len(a_1) * len(a_2)
+        dist += alignment_distance_component
 
     # Penalize unaligned phonemes
     num_phonemes = len(ipas1) if len(ipas1) > len(ipas2) else len(ipas2)
     if len(alignment) < num_phonemes:
         penalty = (num_phonemes - len(alignment)) * extraneous_coda_penalty
-        distance += penalty
+        dist += penalty
         if debug_printing:
             print(
                 "Alignment off by "
@@ -115,14 +111,14 @@ def distance(
             )
 
     if debug_printing:
-        print("Total distance is {}".format(distance))
-    return distance
+        print("Total distance is {}".format(dist))
+    return dist
 
 
 def group_average_linkage(group1, group2, distance=distance):
     _sum = 0
-    assert type(group1) == list and type(group2) == list
-    for s1 in group1:
-        for s2 in group2:
-            _sum += distance(tuple(s1), tuple(s2))
+    assert isinstance(group1, list) and isinstance(group2, list)
+    for syllable_1 in group1:
+        for syllable_2 in group2:
+            _sum += distance(tuple(syllable_1), tuple(syllable_2))
     return _sum / (len(group1) * len(group2))
