@@ -1,9 +1,9 @@
 from itertools import cycle
 
-reset = "\u001b[0m"
-black_text = "\u001b[30m"
-white_background = "\u001b[47m"
-black_background = "\u001b[40m"
+RESET = "\u001b[0m"
+BLACK_TEXT = "\u001b[30m"
+WHITE_BACKGROUND = "\u001b[47m"
+BLACK_BACKGROUND = "\u001b[40m"
 # Backgrounds:
 backgrounds = [
     red,
@@ -41,6 +41,7 @@ class Groups:
         self.syllable_lines = syllable_lines
         self.id_to_group = dict()
         self.index_to_group = dict()
+        self.pronunciations = None
 
     def add_syllable(self, group_id, index):
         assert group_id in self.id_to_group
@@ -77,19 +78,18 @@ class Groups:
         actual_range = []
         for r in ranges:
             for l_i in r:
-                if not (0 <= l_i and l_i < len(self.syllable_lines)):
+                if not 0 <= l_i < len(self.syllable_lines):
                     break
-                # Elif end of verse
-                elif len(self.syllable_lines[l_i]) == 0:
+                # If end of verse
+                if len(self.syllable_lines[l_i]) == 0:
                     break
-                else:
-                    actual_range.append(l_i)
+                actual_range.append(l_i)
 
         for l_i in actual_range:
-            if not (0 <= l_i and l_i < len(self.syllable_lines)):
+            if not 0 <= l_i < len(self.syllable_lines):
                 break
-            # Elif end of verse
-            elif len(self.syllable_lines[l_i]) == 0:
+            # If end of verse
+            if len(self.syllable_lines[l_i]) == 0:
                 break
             for w_i, word in enumerate(self.syllable_lines[l_i]):
                 for p_i, pronun in enumerate(word):
@@ -105,17 +105,12 @@ class Groups:
             value = value[i]
         return value
 
-    def index_to_group(self, index):
-        group_id = self.index_to_group[index]
-        assert group_id is not None
-        return group_id
-
     def set_pronunciations(self, final_pronunciations):
         assert len(final_pronunciations) == len(self.syllable_lines)
         self.pronunciations = final_pronunciations
 
-    def to_text_lines(self, separator="", addresses=False):
-        assert self.pronunciations != None
+    def to_text_lines(self, addresses=False):
+        assert self.pronunciations is not None
         # Assign a color to each group
         group_id_to_color = {}
         colors = cycle(backgrounds)
@@ -123,7 +118,7 @@ class Groups:
         str_lines = []
         for line_number, line in enumerate(self.syllable_lines):
             line_string = ""
-            for w_i, word in enumerate(line):
+            for w_i, _ in enumerate(line):
                 p_i = self.pronunciations[line_number][w_i]
                 pronun = self.syllable_lines[line_number][w_i][p_i]
                 for syl_i, syllable in enumerate(pronun):
@@ -138,15 +133,15 @@ class Groups:
                         group_id = self.index_to_group[index]
                         if group_id not in group_id_to_color:
                             if len(self.id_to_group[group_id]) < 2:
-                                group_id_to_color[group_id] = white_background
+                                group_id_to_color[group_id] = WHITE_BACKGROUND
                             else:
                                 group_id_to_color[group_id] = next(colors)
                         color = group_id_to_color[group_id]
-                        syl_string = color + syl_string + white_background + black_text
+                        syl_string = color + syl_string + WHITE_BACKGROUND + BLACK_TEXT
                     # If there are more syllables to the pronunciation,
                     #   add another dash afterwards
                     if syl_i + 1 < len(pronun):
-                        syl_string += white_background + "-"
+                        syl_string += WHITE_BACKGROUND + "-"
                     line_string += syl_string
 
                 # If word isn't the last word, add a space
@@ -157,16 +152,16 @@ class Groups:
         return str_lines
 
     def __str__(self):
-        return black_text + white_background + "\n".join(self.to_text_lines()) + reset
+        return BLACK_TEXT + WHITE_BACKGROUND + "\n".join(self.to_text_lines()) + RESET
 
     def str_with_text(self, text, addresses=False):
-        s = ""
-        s += black_text + white_background
+        ret_string = ""
+        ret_string += BLACK_TEXT + WHITE_BACKGROUND
         syllable_color_lines = self.to_text_lines(addresses=addresses)
         for line_i, line in enumerate(text):
-            s += line
-            s += syllable_color_lines[line_i]
+            ret_string += line
+            ret_string += syllable_color_lines[line_i]
             if len(self.syllable_lines[line_i]) > 0:
-                s += "\n\n"
-        s += reset
-        return s
+                ret_string += "\n\n"
+        ret_string += RESET
+        return ret_string
