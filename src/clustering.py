@@ -20,7 +20,6 @@ MAX_CODA_CONSONANTS = 5
 MAX_ONSET_CONSONANTS = 3
 
 
-
 def cluster(
     syllable_lines,
     ignore_set,
@@ -209,9 +208,9 @@ def cluster(
 
 
 def get_sorted_linkages(groups, syllable, live_groups):
-    '''
+    """
     Returns [(group_id, linkage_distance)] sorted by linkage_distance
-    '''
+    """
     live_group_linkages = [
         (_id, linkage.group_average_linkage(groups.get_group(_id), [tuple(syllable)]))
         for _id in live_groups
