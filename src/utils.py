@@ -159,7 +159,6 @@ def pronunciations_list_to_syllable_lines(pronunciations_list, src, print_lines=
         text = preprocess_text(src)
         return text.splitlines()
 
-
     syllable_lines = []
     # Set of words to ignore by (line index, word index)
     ignore_set = set()
@@ -178,8 +177,6 @@ def pronunciations_list_to_syllable_lines(pronunciations_list, src, print_lines=
         if line == [""]:
             syllable_lines.append([])
             continue
-
-        num_words = len(line)
 
         # Make syllable_line
         syllable_line = []
