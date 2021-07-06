@@ -2,20 +2,6 @@ from copy import deepcopy
 import linkage
 from groups import Groups
 
-"""
-args:
-    syllable_lines : 2D array, first dimension is lines, second
-    dimension is syllable arrays (with arpabet phonemes) and separators
-returns:
-
-    linkage_criterion : Max threshhold for group average linking
-        between groups
-
-    separator : blank space separator constant between words
-
-    2D array of syllable lines, 2nd dimension is tuples of
-    (syllable array, rhyming_group_id) or a separator
-"""
 MAX_CODA_CONSONANTS = 5
 MAX_ONSET_CONSONANTS = 3
 
@@ -31,6 +17,23 @@ def cluster(
     """
     Clusters the syllable lines into groups.
     Turn on verse_tracking for easier debugging.
+
+    args:
+        syllable_lines : 2D array, first dimension is lines, second
+            dimension is syllable arrays (with arpabet phonemes) and separators
+
+        ignore_set : Set of words to skip pronunciation checking for
+
+        linkage_criterion : Max threshhold for group average linking
+            between groups
+
+        verse_tracking : Boolean to return a dictionary of verse IDs to
+            a list of the group IDs for the groups that appear in the verse
+
+        max_live_lines : Maximum distance between current line and other line
+            for line to be considered "live"
+    returns:
+        groups.Groups clustering of syllables, and verse_tracking info
     """
 
     assert num_iterations > 0
