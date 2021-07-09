@@ -1,4 +1,4 @@
-# Algorithmic Detecting Rhymes in Rap and Highlighting
+# Algorithmic Highlighting of Rhymes in Rap
 
 ## Demo
 
