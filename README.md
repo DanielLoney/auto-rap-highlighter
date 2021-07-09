@@ -13,6 +13,7 @@ Using MF DOOM's Figaro
 - A lot of refactoring / better abstaction
 - Frontend UI
 - Formal Paper
+- Better Testing + ci/cd (through GitHub Actions)
 
 ## Setting up the virtual environment and dependencies
 
