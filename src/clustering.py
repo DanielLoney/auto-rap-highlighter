@@ -18,7 +18,7 @@ def cluster(
     Clusters the syllable lines into groups.
     Turn on verse_tracking for easier debugging.
 
-    args:
+    Args:
         syllable_lines : 2D array, first dimension is lines, second
             dimension is syllable arrays (with arpabet phonemes) and separators
 
@@ -32,7 +32,7 @@ def cluster(
 
         max_live_lines : Maximum distance between current line and other line
             for line to be considered "live"
-    returns:
+    Returns:
         groups.Groups clustering of syllables, and verse_tracking info
     """
 
@@ -69,11 +69,9 @@ def cluster(
             for syllable in pronun:
                 assert len(syllable) != 0
                 sorted_base_syllable_linkages = get_sorted_linkages(
-                    groups, syllable, live_groups
-                )
+                    groups, syllable, live_groups)
                 (_, linkage_value) = get_best_group_id_linkage_distance(
-                    sorted_base_syllable_linkages
-                )
+                    sorted_base_syllable_linkages)
                 avg_linkage += linkage_value
             avg_linkage /= len(syllable)
             if avg_linkage < best_linkage:
@@ -164,10 +162,8 @@ def cluster(
 
                     (
                         best_group_id,
-                        best_linkage_value,
-                    ) = get_best_group_id_linkage_distance(
-                        sorted_base_syllable_linkages
-                    )
+                        best_linkage_value,) = get_best_group_id_linkage_distance(
+                        sorted_base_syllable_linkages)
 
                     if best_linkage_value <= linkage_criterion:
                         # Add the syllable to the best_group_id
