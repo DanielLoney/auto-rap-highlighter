@@ -1,5 +1,19 @@
 # Algorithmic Detecting Rhymes in Rap and Highlighting
 
+## Demo
+
+<div align='center'>
+<img
+src="https://raw.githubusercontent.com/DanielLoney/rhymerap/main/.github/images/demo1.png"/>
+</div>
+Using MF DOOM's Figaro
+
+## Planned Changes
+
+- A lot of refactoring / better abstaction
+- Frontend UI
+- Formal Paper
+
 ## Setting up the virtual environment and dependencies
 
 1. Install Python
