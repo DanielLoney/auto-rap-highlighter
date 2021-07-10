@@ -9,7 +9,6 @@ MAX_ONSET_CONSONANTS = 3
 
 class _ClusterIterVars:
     """Object to represent variables required for _cluster_iteration"""
-
     def __init__(self):
         self.next_group_id = None
         self.groups = None
@@ -35,21 +34,36 @@ def _update_live_groups(cluster_args, iter_vars, first_iter, line_number):
             line_number, cluster_args.max_live_lines
         )
 
+def _reinsert_word(iter_vars, line_number, word_i, word):
+    """Remove all syllables from groups and remove the group
+    id associated with it if it was the only syllable left
+    in the group"""
+    for p_i, p in enumerate(word):
+        for s_i in range(len(p)):
+            index = (line_number, word_i, p_i, s_i)
+            if index in iter_vars.groups.index_to_group:
+                _id = iter_vars.groups.index_to_group[index]
+                iter_vars.groups.remove_syllable(index)
+                if _id not in iter_vars.groups.id_to_group:
+                    iter_vars.live_groups.remove(_id)
+
+def _save_and_reset(cluster_args, iter_vars, first_iter, line_number):
+    if cluster_args.verse_tracking:
+        # save
+        if len(iter_vars.current_verse_groups) > 0:
+            iter_vars.verse_dict[
+                iter_vars.current_verse_starting_line
+            ] = iter_vars.current_verse_groups
+
+        # reset
+        iter_vars.current_verse_starting_line = line_number + 1
+        iter_vars.current_verse_groups = set()
+    if first_iter:
+        # reset live_groups
+        iter_vars.live_groups = dict()
 def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
     """Single cluster iteration, see cluster docstring for more info"""
 
-    def reinsert_word(line_number, word_i, word):
-        """Remove all syllables from groups and remove the group
-        id associated with it if it was the only syllable left
-        in the group"""
-        for p_i, p in enumerate(word):
-            for s_i in range(len(p)):
-                index = (line_number, word_i, p_i, s_i)
-                if index in iter_vars.groups.index_to_group:
-                    _id = iter_vars.groups.index_to_group[index]
-                    iter_vars.groups.remove_syllable(index)
-                    if _id not in iter_vars.groups.id_to_group:
-                        iter_vars.live_groups.remove(_id)
 
     # Reset verse_tracking
     if cluster_args.verse_tracking:
@@ -61,31 +75,21 @@ def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
         if first_iter:
             iter_vars.final_pronunciations.append([])
 
-        # If empty line, save and reset variables
         if len(line) == 0:
-            if cluster_args.verse_tracking:
-                # save
-                if len(iter_vars.current_verse_groups) > 0:
-                    iter_vars.verse_dict[
-                        iter_vars.current_verse_starting_line
-                    ] = iter_vars.current_verse_groups
-
-                # reset
-                iter_vars.current_verse_starting_line = line_number + 1
-                iter_vars.current_verse_groups = set()
-            if first_iter:
-                # reset live_groups
-                iter_vars.live_groups = dict()
+            _save_and_reset(cluster_args, iter_vars, first_iter, line_number)
             continue
+
         _update_live_groups(cluster_args, iter_vars, first_iter, line_number)
 
         for word_i, word in enumerate(line):
+            # If the word is in the ignore set, just use the first
+            # pronunciation
             if (line_number, word_i) in cluster_args.ignore_set:
                 if first_iter:
                     iter_vars.final_pronunciations[line_number].append(0)
                 continue
             if not first_iter:
-                reinsert_word(line_number, word_i, word)
+                _reinsert_word(iter_vars, line_number, word_i, word)
             # Get best pronunciation
             p_i = get_best_pronunciation(word, iter_vars.groups, iter_vars.live_groups)
             # Update final_pronunciations
