@@ -9,6 +9,7 @@ MAX_ONSET_CONSONANTS = 3
 
 class _ClusterIterVars:
     """Object to represent variables required for _cluster_iteration"""
+
     def __init__(self):
         self.next_group_id = None
         self.groups = None
@@ -17,6 +18,7 @@ class _ClusterIterVars:
         self.final_pronunciations = None
         self.verse_dict = None
         self.current_verse_groups = None
+
 
 def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
     """Single cluster iteration, see cluster docstring for more info"""
@@ -50,7 +52,7 @@ def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
             # Update live_groups
             new_live_groups = deepcopy(iter_vars.live_groups)
             for _id in iter_vars.live_groups:
-                if not still_live(
+                if not _still_live(
                     iter_vars.live_groups, line_number, cluster_args.max_live_lines, _id
                 ):
                     del new_live_groups[_id]
@@ -89,14 +91,14 @@ def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
             for syllable_i, syllable in enumerate(pronun):
                 # Check group linkage value of set([syllable]) and
                 # live_groups
-                sorted_base_syllable_linkages = get_sorted_linkages(
+                sorted_base_syllable_linkages = _get_sorted_linkages(
                     iter_vars.groups, syllable, iter_vars.live_groups
                 )
 
                 (
                     best_group_id,
                     best_linkage_value,
-                ) = get_best_group_id_linkage_distance(sorted_base_syllable_linkages)
+                ) = _get_best_group_id_linkage_distance(sorted_base_syllable_linkages)
 
                 if best_linkage_value <= cluster_args.linkage_criterion:
                     # Add the syllable to the best_group_id
@@ -129,12 +131,14 @@ def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
                     iter_vars.next_group_id += 1
     iter_vars.groups.set_pronunciations(iter_vars.final_pronunciations)
 
+
 # ClusterArgs namedtuple subclass of tuple
 ClusterArgs = namedtuple(
     "ClusterArgs",
     "syllable_lines ignore_set linkage_criterion "
     + "verse_tracking max_live_lines num_iterations",
 )
+
 
 def cluster(
     syllable_lines,
@@ -230,10 +234,10 @@ def get_best_pronunciation(word, groups, live_groups):
         avg_linkage = 0
         for syllable in pronun:
             assert len(syllable) != 0
-            sorted_base_syllable_linkages = get_sorted_linkages(
+            sorted_base_syllable_linkages = _get_sorted_linkages(
                 groups, syllable, live_groups
             )
-            (_, linkage_value) = get_best_group_id_linkage_distance(
+            (_, linkage_value) = _get_best_group_id_linkage_distance(
                 sorted_base_syllable_linkages
             )
             avg_linkage += linkage_value
@@ -244,7 +248,7 @@ def get_best_pronunciation(word, groups, live_groups):
     return best_p_i
 
 
-def get_sorted_linkages(groups, syllable, live_groups):
+def _get_sorted_linkages(groups, syllable, live_groups):
     """
     Returns [(group_id, linkage_distance)] sorted by linkage_distance
     """
@@ -256,19 +260,19 @@ def get_sorted_linkages(groups, syllable, live_groups):
     return sorted(live_group_linkages, key=lambda pair: pair[1])
 
 
-def get_best_group_id_linkage_distance(sorted_linkages):
+def _get_best_group_id_linkage_distance(sorted_linkages):
     if len(sorted_linkages) == 0:
         return (-1, float("inf"))
     return sorted_linkages[0]
 
 
-def still_live(live_groups, line_number, max_live_lines, _id):
+def _still_live(live_groups, line_number, max_live_lines, _id):
     if _id not in live_groups:
         raise Exception("Id {} not in live groups".format(_id))
     return live_groups[_id]["most_recent_line"] >= line_number - max_live_lines
 
 
-def get_num_coda_consonants(syllable):
+def _get_num_coda_consonants(syllable):
     num_coda_cs = 0
     for c in syllable[::-1]:
         if c not in linkage.arpa_vowels:
