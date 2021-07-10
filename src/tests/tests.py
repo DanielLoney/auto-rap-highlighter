@@ -145,8 +145,8 @@ class ClusteringTests(unittest.TestCase):
         self.assertTrue(clustering.next_syllable_num_onsets(2, syllable_line == 2))
 
     def test_cluster(self):
-        """Testing cluster clusters correctly with default evaluation
-        values"""
+        """Integration testing cluster clusters correctly with default
+        evaluation values"""
 
         num_iterations = 5
         with open(

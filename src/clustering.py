@@ -69,9 +69,11 @@ def cluster(
             for syllable in pronun:
                 assert len(syllable) != 0
                 sorted_base_syllable_linkages = get_sorted_linkages(
-                    groups, syllable, live_groups)
+                    groups, syllable, live_groups
+                )
                 (_, linkage_value) = get_best_group_id_linkage_distance(
-                    sorted_base_syllable_linkages)
+                    sorted_base_syllable_linkages
+                )
                 avg_linkage += linkage_value
             avg_linkage /= len(syllable)
             if avg_linkage < best_linkage:
@@ -162,8 +164,10 @@ def cluster(
 
                     (
                         best_group_id,
-                        best_linkage_value,) = get_best_group_id_linkage_distance(
-                        sorted_base_syllable_linkages)
+                        best_linkage_value,
+                    ) = get_best_group_id_linkage_distance(
+                        sorted_base_syllable_linkages
+                    )
 
                     if best_linkage_value <= linkage_criterion:
                         # Add the syllable to the best_group_id
