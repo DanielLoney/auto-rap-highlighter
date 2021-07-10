@@ -10,10 +10,10 @@ Using MF DOOM's Figaro
 
 ## Planned Changes
 
-[] A lot of refactoring / better abstaction
-[] Frontend UI
-[] Formal Paper
-[x] Better Testing
+- [ ] A lot of refactoring / better abstaction
+- [ ] Frontend UI
+- [ ] Formal Paper
+- [x] Better Testing
 
 ## Setting up the virtual environment and dependencies
 
