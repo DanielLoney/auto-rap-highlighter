@@ -165,6 +165,7 @@ class ClusteringTests(unittest.TestCase):
                 ignore_set,
                 verse_tracking=False,
                 num_iterations=num_iterations,
+                verbose=False,
             )
 
             self.assertEqual(str(groups), str(target_groups))
