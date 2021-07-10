@@ -19,6 +19,21 @@ class _ClusterIterVars:
         self.verse_dict = None
         self.current_verse_groups = None
 
+def _update_live_groups(cluster_args, iter_vars, first_iter, line_number):
+    if first_iter:
+        # Update live_groups
+        new_live_groups = deepcopy(iter_vars.live_groups)
+        for _id in iter_vars.live_groups:
+            if not _still_live(
+                iter_vars.live_groups, line_number, cluster_args.max_live_lines, _id
+            ):
+                del new_live_groups[_id]
+        iter_vars.live_groups = new_live_groups
+    elif not first_iter:
+        # Update live_groups
+        iter_vars.live_groups = iter_vars.groups.get_groups_in_range(
+            line_number, cluster_args.max_live_lines
+        )
 
 def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
     """Single cluster iteration, see cluster docstring for more info"""
@@ -62,20 +77,7 @@ def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
                 # reset live_groups
                 iter_vars.live_groups = dict()
             continue
-        if first_iter:
-            # Update live_groups
-            new_live_groups = deepcopy(iter_vars.live_groups)
-            for _id in iter_vars.live_groups:
-                if not _still_live(
-                    iter_vars.live_groups, line_number, cluster_args.max_live_lines, _id
-                ):
-                    del new_live_groups[_id]
-            iter_vars.live_groups = new_live_groups
-        elif not first_iter:
-            # Update live_groups
-            iter_vars.live_groups = iter_vars.groups.get_groups_in_range(
-                line_number, cluster_args.max_live_lines
-            )
+        _update_live_groups(cluster_args, iter_vars, first_iter, line_number)
 
         for word_i, word in enumerate(line):
             if (line_number, word_i) in cluster_args.ignore_set:

@@ -114,7 +114,7 @@ class linkage_tests(unittest.TestCase):
 class ClusteringTests(unittest.TestCase):
     def test_get_num_coda_consonants(self):
         spin = ["S", "P", "IH", "N"]
-        self.assertTrue(clustering.get_num_coda_consonants(spin) == 1)
+        self.assertTrue(clustering._get_num_coda_consonants(spin) == 1)
 
     def test_no_longer_live(self):
         live_groups = {
@@ -124,12 +124,12 @@ class ClusteringTests(unittest.TestCase):
         current_line = 3
         max_live_lines = 2
 
-        _0_still_live = clustering.still_live(
+        _0_still_live = clustering._still_live(
             live_groups, current_line, max_live_lines, 0
         )
         self.assertTrue(_0_still_live is False)
 
-        _1_still_live = clustering.still_live(
+        _1_still_live = clustering._still_live(
             live_groups, current_line, max_live_lines, 1
         )
         self.assertTrue(_1_still_live is True)
