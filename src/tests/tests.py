@@ -1,4 +1,5 @@
 import unittest
+import pickle
 from aline import arpa2aline
 import linkage, clustering
 from tests.juicy_syllable_lines import juicy_syllable_lines
@@ -143,58 +144,78 @@ class ClusteringTests(unittest.TestCase):
         self.assertTrue(clustering.next_syllable_num_onsets(0, syllable_line == 1))
         self.assertTrue(clustering.next_syllable_num_onsets(2, syllable_line == 2))
 
-    def test_has_next_syllable(self):
-        syllable_line = [["AH"], "", ["AH"]]
-        self.assertTrue(clustering.has_next_syllable(0, syllable_line) is True)
-        self.assertTrue(clustering.has_next_syllable(2, syllable_line) is False)
+    def test_cluster(self):
+        """Testing cluster clusters correctly with default evaluation
+        values"""
 
-    def test_get_sorted_linkages(self):
-        live_groups = {0: {"group": [tuple(["AH"])], "most_recent_line": 0}}
+        num_iterations = 5
+        with open(
+            "tests/test_data/syllable_lines.pickle", "rb"
+        ) as syllable_lines_out, open(
+            "tests/test_data/ignore_set.pickle", "rb"
+        ) as ignore_set_out, open(
+            "tests/test_data/groups.pickle", "rb"
+        ) as target_groups_out:
+            syllable_lines = pickle.load(syllable_lines_out)
+            ignore_set = pickle.load(ignore_set_out)
+            target_groups = pickle.load(target_groups_out)
 
-        syllable = ["AH"]
-        expected = [(0, 0)]
-        self.assertTrue(
-            clustering.get_sorted_linkages(syllable, live_groups) == expected
-        )
+            groups = clustering.cluster(
+                syllable_lines,
+                ignore_set,
+                verse_tracking=False,
+                num_iterations=num_iterations,
+            )
 
-        live_groups = {
-            0: {"group": [tuple(["IH"])], "most_recent_line": 0},
-            1: {"group": [tuple(["AH"])], "most_recent_line": 0},
-        }
-        expected = [(1, 0), (0, linkage.distance(syllable, ["IH"]))]
+            self.assertEqual(str(groups), str(target_groups))
 
-        self.assertTrue(
-            clustering.get_sorted_linkages(syllable, live_groups) == expected
-        )
+    # def test_get_sorted_linkages(self):
+    #     live_groups = {0: {"group": [tuple(["AH"])], "most_recent_line": 0}}
 
-    def test_best_num_consonants_to_give(self):
-        live_groups = {
-            0: {"group": [tuple(["AH"])], "most_recent_line": 0},
-            1: {"group": [tuple(["IH"])], "most_recent_line": 0},
-        }
-        syllable_line = [["AH", "T", "T", "T", "T"], "", ["AH"]]
-        current_index = 0
-        (_, best_linkage_value) = clustering.get_best_group_id_linkage_distance(
-            clustering.get_sorted_linkages(syllable_line[current_index], live_groups)
-        )
+    #     syllable = ["AH"]
+    #     expected = [(0, 0)]
+    #     self.assertTrue(
+    #         clustering.get_sorted_linkages(syllable, live_groups) == expected
+    #     )
 
-        d = linkage.group_average_linkage(
-            [tuple(["AH", "T"])], [tuple(["T", "T", "T", "AH"])]
-        )
-        best_num_cs = clustering.best_num_consonants_to_give(
-            syllable_line, live_groups, best_linkage_value, current_index
-        )
-        # print("Got (best average linkage, phoneme difference) =\
-        #    {}".format(best_num_cs))
-        self.assertTrue(best_num_cs == (0, d, -3))
+    #     live_groups = {
+    #         0: {"group": [tuple(["IH"])], "most_recent_line": 0},
+    #         1: {"group": [tuple(["AH"])], "most_recent_line": 0},
+    #     }
+    #     expected = [(1, 0), (0, linkage.distance(syllable, ["IH"]))]
 
-        live_groups = {
-            1: {"group": [tuple(["AH"])], "most_recent_line": 0},
-            0: {"group": [tuple(["IH"])], "most_recent_line": 0},
-        }
-        best_num_cs = clustering.best_num_consonants_to_give(
-            syllable_line, live_groups, best_linkage_value, current_index
-        )
-        # print("Got (best average linkage, phoneme difference) =\
-        #    {}".format(best_num_cs))
-        self.assertTrue(best_num_cs == (1, d, -3))
+    #     self.assertTrue(
+    #         clustering.get_sorted_linkages(syllable, live_groups) == expected
+    #     )
+
+    # def test_best_num_consonants_to_give(self):
+    #     live_groups = {
+    #         0: {"group": [tuple(["AH"])], "most_recent_line": 0},
+    #         1: {"group": [tuple(["IH"])], "most_recent_line": 0},
+    #     }
+    #     syllable_line = [["AH", "T", "T", "T", "T"], "", ["AH"]]
+    #     current_index = 0
+    #     (_, best_linkage_value) = clustering.get_best_group_id_linkage_distance(
+    #         clustering.get_sorted_linkages(syllable_line[current_index], live_groups)
+    #     )
+
+    #     d = linkage.group_average_linkage(
+    #         [tuple(["AH", "T"])], [tuple(["T", "T", "T", "AH"])]
+    #     )
+    #     best_num_cs = clustering.best_num_consonants_to_give(
+    #         syllable_line, live_groups, best_linkage_value, current_index
+    #     )
+    #     # print("Got (best average linkage, phoneme difference) =\
+    #     #    {}".format(best_num_cs))
+    #     self.assertTrue(best_num_cs == (0, d, -3))
+
+    #     live_groups = {
+    #         1: {"group": [tuple(["AH"])], "most_recent_line": 0},
+    #         0: {"group": [tuple(["IH"])], "most_recent_line": 0},
+    #     }
+    #     best_num_cs = clustering.best_num_consonants_to_give(
+    #         syllable_line, live_groups, best_linkage_value, current_index
+    #     )
+    #     # print("Got (best average linkage, phoneme difference) =\
+    #     #    {}".format(best_num_cs))
+    #     self.assertTrue(best_num_cs == (1, d, -3))
