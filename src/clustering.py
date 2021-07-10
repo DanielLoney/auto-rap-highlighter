@@ -22,6 +22,20 @@ class _ClusterIterVars:
 
 def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
     """Single cluster iteration, see cluster docstring for more info"""
+
+    def reinsert_word(line_number, word_i, word):
+        """Remove all syllables from groups and remove the group
+        id associated with it if it was the only syllable left
+        in the group"""
+        for p_i, p in enumerate(word):
+            for s_i in range(len(p)):
+                index = (line_number, word_i, p_i, s_i)
+                if index in iter_vars.groups.index_to_group:
+                    _id = iter_vars.groups.index_to_group[index]
+                    iter_vars.groups.remove_syllable(index)
+                    if _id not in iter_vars.groups.id_to_group:
+                        iter_vars.live_groups.remove(_id)
+
     # Reset verse_tracking
     if cluster_args.verse_tracking:
         iter_vars.current_verse_starting_line = 0
@@ -48,7 +62,7 @@ def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
                 # reset live_groups
                 iter_vars.live_groups = dict()
             continue
-        elif first_iter:
+        if first_iter:
             # Update live_groups
             new_live_groups = deepcopy(iter_vars.live_groups)
             for _id in iter_vars.live_groups:
@@ -69,17 +83,7 @@ def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
                     iter_vars.final_pronunciations[line_number].append(0)
                 continue
             if not first_iter:
-                # Remove all syllables from groups and remove the group
-                # id associated with it if it was the only syllable left
-                # in the group
-                for p_i, p in enumerate(word):
-                    for s_i in range(len(p)):
-                        index = (line_number, word_i, p_i, s_i)
-                        if index in iter_vars.groups.index_to_group:
-                            _id = iter_vars.groups.index_to_group[index]
-                            iter_vars.groups.remove_syllable(index)
-                            if _id not in iter_vars.groups.id_to_group:
-                                iter_vars.live_groups.remove(_id)
+                reinsert_word(line_number, word_i, word)
             # Get best pronunciation
             p_i = get_best_pronunciation(word, iter_vars.groups, iter_vars.live_groups)
             # Update final_pronunciations
