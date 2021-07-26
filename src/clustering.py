@@ -220,7 +220,7 @@ def cluster(
         num_iterations,
         verbose,
     )
-    _check_args(cluster_args)
+    _assert_valid_args(cluster_args)
 
     iter_vars = _init_iter_vars(cluster_args)
 
@@ -281,7 +281,7 @@ def _init_verse_tracking_iter_vars(iter_vars):
     iter_vars.current_verse_groups = set()
 
 
-def _check_args(cluster_args):
+def _assert_valid_args(cluster_args):
     assert cluster_args.num_iterations > 0
     assert cluster_args.max_live_lines >= 0
     assert cluster_args.linkage_criterion >= 0
