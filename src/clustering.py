@@ -114,14 +114,15 @@ def _init_iter_vars(cluster_args):
 
 
 def _cluster_groups(cluster_args, iter_vars):
+
     # First iteration: Only checks preceding groups
+    _cluster_iteration(cluster_args, iter_vars, first_iter=True)
+
     # Second iteration:
     #     For each syllable
     #         Remove it from its group
     #         Redetermine best_group_id using groups set from previous
     #         iteration
-
-    _cluster_iteration(cluster_args, iter_vars, first_iter=True)
     for i in range(cluster_args.num_iterations - 1):
         if cluster_args.verbose:
             print("Iteration {} of {}...".format(i + 2, cluster_args.num_iterations))
