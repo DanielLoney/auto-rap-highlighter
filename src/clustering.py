@@ -21,7 +21,6 @@ class _ClusterIterVars:
         self.current_verse_groups = None
 
 
-
 def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
     """Single cluster iteration, see cluster docstring for more info"""
 
@@ -66,13 +65,14 @@ def _cluster_iteration(cluster_args, iter_vars, first_iter=True):
                 # live_groups
 
                 indexes = (line_number, word_i, p_i, syllable_i)
-                _check_syllable_and_update(cluster_args, iter_vars, first_iter,
-                        indexes, syllable)
+                _check_syllable_and_update(
+                    cluster_args, iter_vars, first_iter, indexes, syllable
+                )
 
     iter_vars.groups.set_pronunciations(iter_vars.final_pronunciations)
 
-def _check_syllable_and_update(cluster_args, iter_vars, first_iter, indexes,
-        syllable):
+
+def _check_syllable_and_update(cluster_args, iter_vars, first_iter, indexes, syllable):
     (line_number, word_i, p_i, syllable_i) = indexes
     sorted_base_syllable_linkages = _get_sorted_linkages(
         iter_vars.groups, syllable, iter_vars.live_groups
@@ -83,7 +83,6 @@ def _check_syllable_and_update(cluster_args, iter_vars, first_iter, indexes,
         best_linkage_value,
     ) = _get_best_group_id_linkage_distance(sorted_base_syllable_linkages)
 
-
     if best_linkage_value <= cluster_args.linkage_criterion:
         # Add the syllable to the best_group_id
         # Update groups
@@ -92,9 +91,7 @@ def _check_syllable_and_update(cluster_args, iter_vars, first_iter, indexes,
         )
         if first_iter:
             # Update live_groups
-            iter_vars.live_groups[best_group_id] = {
-                "most_recent_line": line_number
-            }
+            iter_vars.live_groups[best_group_id] = {"most_recent_line": line_number}
     else:
         _add_new_group_and_update(
             cluster_args,
@@ -102,6 +99,7 @@ def _check_syllable_and_update(cluster_args, iter_vars, first_iter, indexes,
             first_iter,
             indexes,
         )
+
 
 def _update_live_groups(cluster_args, iter_vars, first_iter, line_number):
     if first_iter:
