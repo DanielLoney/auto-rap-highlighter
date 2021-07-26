@@ -172,10 +172,10 @@ def _add_new_group_and_update(cluster_args, iter_vars, first_iter, indexes):
 
 
 # ClusterArgs namedtuple subclass of tuple
-ClusterArgs = namedtuple(
+_ClusterArgs = namedtuple(
     "ClusterArgs",
     "syllable_lines ignore_set linkage_criterion "
-    + "verse_tracking max_live_lines num_iterations",
+    + "verse_tracking max_live_lines num_iterations verbose",
 )
 
 
@@ -210,21 +210,56 @@ def cluster(
         groups.Groups clustering of syllables, and verse_tracking info
     """
 
-    assert num_iterations > 0
-    assert max_live_lines >= 0
-    assert linkage_criterion >= 0
+    # Create a cluser_args variable
+    cluster_args = _ClusterArgs(
+        syllable_lines,
+        ignore_set,
+        linkage_criterion,
+        verse_tracking,
+        max_live_lines,
+        num_iterations,
+        verbose,
+    )
+    _check_args(cluster_args)
 
+    iter_vars = _init_iter_vars(cluster_args)
+
+    if verbose:
+        print("Iteration 1 of {}...".format(num_iterations))
+
+    _cluster_groups(cluster_args, iter_vars)
+
+    if verse_tracking:
+        return (iter_vars.groups, iter_vars.verse_dict)
+    return iter_vars.groups
+
+
+def _cluster_groups(cluster_args, iter_vars):
+    # First iteration: Only checks preceding groups
+    # Second iteration:
+    #     For each syllable
+    #         Remove it from its group
+    #         Redetermine best_group_id using groups set from previous
+    #         iteration
+
+    _cluster_iteration(cluster_args, iter_vars, first_iter=True)
+    for i in range(cluster_args.num_iterations - 1):
+        if cluster_args.verbose:
+            print("Iteration {} of {}...".format(i + 2, cluster_args.num_iterations))
+        _cluster_iteration(cluster_args, iter_vars, first_iter=False)
+
+
+def _init_iter_vars(cluster_args):
     # Set up variables for initial cluster iteration
     iter_vars = _ClusterIterVars()
+
     # cluster arguments
     # group id to group
     iter_vars.next_group_id = 0
-    iter_vars.groups = Groups(syllable_lines)  # groups[group_id] = list(syllables)
-    if verse_tracking:
-        # Keep track of verse_first_line_#, current groupings_dict
-        iter_vars.current_verse_starting_line = 0
-        iter_vars.verse_dict = dict()  # current_verse_dict[line_#] = set(group_ids)
-        iter_vars.current_verse_groups = set()
+    iter_vars.groups = Groups(
+        cluster_args.syllable_lines
+    )  # groups[group_id] = list(syllables)
+
     iter_vars.live_groups = dict()  # live_groups[_id] = {'group': set(syllables),
     #       'most_recent_line': int}
 
@@ -233,33 +268,23 @@ def cluster(
     # final_pronunciations = [line1, line2, ...]
     iter_vars.final_pronunciations = []
 
-    # Create a cluser_args variable
-    cluster_args = ClusterArgs(
-        syllable_lines,
-        ignore_set,
-        linkage_criterion,
-        verse_tracking,
-        max_live_lines,
-        num_iterations,
-    )
+    if cluster_args.verse_tracking:
+        _init_verse_tracking_iter_vars(iter_vars)
 
-    # First iteration: Only checks preceding groups
-    # Second iteration:
-    #     For each syllable
-    #         Remove it from its group
-    #         Redetermine best_group_id using groups set from previous
-    #         iteration
-    if verbose:
-        print("Iteration 1 of {}...".format(num_iterations))
-    _cluster_iteration(cluster_args, iter_vars, first_iter=True)
-    for i in range(num_iterations - 1):
-        if verbose:
-            print("Iteration {} of {}...".format(i + 2, num_iterations))
-        _cluster_iteration(cluster_args, iter_vars, first_iter=False)
+    return iter_vars
 
-    if verse_tracking:
-        return (iter_vars.groups, iter_vars.verse_dict)
-    return iter_vars.groups
+
+def _init_verse_tracking_iter_vars(iter_vars):
+    # Keep track of verse_first_line_#, current groupings_dict
+    iter_vars.current_verse_starting_line = 0
+    iter_vars.verse_dict = dict()  # current_verse_dict[line_#] = set(group_ids)
+    iter_vars.current_verse_groups = set()
+
+
+def _check_args(cluster_args):
+    assert cluster_args.num_iterations > 0
+    assert cluster_args.max_live_lines >= 0
+    assert cluster_args.linkage_criterion >= 0
 
 
 def get_best_pronunciation(word, groups, live_groups):
