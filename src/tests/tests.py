@@ -32,81 +32,86 @@ class linkage_tests(unittest.TestCase):
                 self.assertListEqual(linkage.align([arpa], [arpa]), alignment)
 
     def test_distance_identity(self):
-        d1 = linkage.distance(self.san, self.san)
-        self.assertEqual(d1, 0)
+        d_san_san = linkage.distance(self.san, self.san)
+        self.assertEqual(d_san_san, 0)
         # print("d(san, san) = d(san,san) = {}".format(d1))
 
     def test_distance_diff_onsets(self):
         san2 = self.san
         with self.subTest():
             zan = ["Z", "AH", "N"]
-            d2 = linkage.distance(self.san, zan)
-            self.assertEqual(d2, 0)
-            d3 = linkage.distance(san2, zan)
-            self.assertEqual(d3, 0)
+            d_san_zan = linkage.distance(self.san, zan)
+            self.assertEqual(d_san_zan, 0)
+            d_san2_zan = linkage.distance(san2, zan)
+            self.assertEqual(d_san2_zan, 0)
         with self.subTest():
             span = ["S", "P", "AH", "N"]
-            d2 = linkage.distance(self.san, span)
-            self.assertEqual(d2, 0)
-            d3 = linkage.distance(san2, span)
-            self.assertEqual(d3, 0)
+            d_san_zan = linkage.distance(self.san, span)
+            self.assertEqual(d_san_zan, 0)
+            d_san2_zan = linkage.distance(san2, span)
+            self.assertEqual(d_san2_zan, 0)
 
     # Identity lower than Near Rhymes lower than Non-Rhymes
     def test_distance_identity_near_rhyme_non_rhyme(self):
 
-        d1 = linkage.distance(self.san, self.san)
+        d_san_san = linkage.distance(self.san, self.san)
         son = ["S", "AO", "N"]
-        d2 = linkage.distance(self.san, son)
+        d_san_son = linkage.distance(self.san, son)
         it = ["IH", "T"]
-        d3 = linkage.distance(self.san, it)
+        d_san_it = linkage.distance(self.san, it)
         # d(san, san) < d(san, son) < d(san, it)
-        self.assertTrue(d1 < d2 < d3)
+        self.assertTrue(d_san_san < d_san_son < d_san_it)
         # print("d(san, san) = {} < d(san, son) = {} < d(san, it) = {}".format(\
         #        d1, d2, d3))
 
     # Extraneous coda should affect distance
     def test_extraneous_coda(self):
-        an = ["AH", "N"]
-        ant = ["AH", "N", "T"]
-        d = linkage.distance(an, ant)
-        # d(an, ant) > 0
-        self.assertTrue(d > 0)
-        # print("d(an, ant) = {} > 0".format(d))
+        with self.subTest():
+            an = ["AH", "N"]
+            ant = ["AH", "N", "T"]
+            d_an_ant = linkage.distance(an, ant)
+            # d(an, ant) > 0
+            self.assertTrue(d_an_ant > 0)
+            # print("d(an, ant) = {} > 0".format(d))
 
-        spain = ["S", "P", "EY", "N"]
-        spay = ["S", "P", "EY"]
-        d = linkage.distance(spain, spay)
-        # d(spain, spay) > 0
-        self.assertTrue(d > 0)
-        # print("d(spain, spay) = {} > 0".format(d))
+        with self.subTest():
+            spain = ["S", "P", "EY", "N"]
+            spay = ["S", "P", "EY"]
+            d_spain_spay = linkage.distance(spain, spay)
+            # d(spain, spay) > 0
+            self.assertTrue(d_spain_spay > 0)
+            # print("d(spain, spay) = {} > 0".format(d))
 
     # Extraneous onset should not affect distance
     def test_extraneous_onset(self):
         pin = ["P", "IH", "N"]
         spin = ["S", "P", "IH", "N"]
         # d(pin, spin) == 0
-        self.assertTrue(linkage.distance(spin, pin) == 0)
+        d_spin_pin = linkage.distance(spin, pin)
+        self.assertTrue(d_spin_pin == 0)
 
     def test_multiple_aligned_phonemes(self):
         ak = ["AH", "K"]
         ows = ["OW", "Z"]
         oak = ["OW", "K"]
-        self.assertTrue(linkage.distance(ak, ows) > linkage.distance(ak, oak))
+        d_ak_ows = linkage.distance(ak, ows)
+        d_ak_oak = linkage.distance(ak, oak)
+        self.assertTrue(d_ak_ows > d_ak_oak)
 
     def test_group_average_linkage(self):
         pin = ["P", "IH", "N"]
         spin = ["S", "P", "IH", "N"]
-        group1 = [tuple(pin)]
-        group2 = [tuple(spin)]
-        self.assertTrue(linkage.group_average_linkage(group1, group2) == 0)
+        group_pin = [tuple(pin)]
+        group_spin = [tuple(spin)]
+        self.assertTrue(linkage.group_average_linkage(group_pin, group_spin) == 0)
 
         pint = ["P", "IH", "N", "T"]
-        group2 = [tuple(pint)]
-        self.assertTrue(linkage.group_average_linkage(group1, group2) > 0)
+        group_pint = [tuple(pint)]
+        self.assertTrue(linkage.group_average_linkage(group_pin, group_pint) > 0)
 
-        group3 = [tuple(pin), tuple(pin), tuple(pint)]
+        group_pin_pin_pint = [tuple(pin), tuple(pin), tuple(pint)]
         self.assertTrue(
-            linkage.group_average_linkage(group1, group3)
+            linkage.group_average_linkage(group_pin, group_pin_pin_pint)
             == linkage.distance(tuple(pin), tuple(pint)) / 3
         )
 
